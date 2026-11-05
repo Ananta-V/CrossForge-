@@ -55,3 +55,4 @@ end $$;
 grant execute on function cw_record_scratch_score(text,text,int), cw_leaderboard() to anon, authenticated;
 
 notify pgrst, 'reload schema';
+
