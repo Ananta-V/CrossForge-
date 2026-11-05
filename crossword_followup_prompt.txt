@@ -1,0 +1,42 @@
+Continue in this same conversation. Build the NEXT crossword puzzle using ONLY the words from the word lists below.
+
+CRITICAL INSTRUCTION FOR THE RESPONSE:
+- Your response MUST start immediately with ```json and end with ```.
+- Return ONLY the ```json code block.
+- NO introduction, NO conversational opening, NO explanation, NO list of clues in plain text, NO text before or after the code block.
+- This ensures the JSON renders with a one-click "Copy code" button in ChatGPT.
+
+SELECTION & INTERSECTION RULES
+- Pick a completely different central spine word, new shape, and orientation from the previous puzzle.
+- PRIORITIZE words from "NEW / UNUSED WORDS" (words not yet solved in any previous crossword).
+- Words from "ALREADY USED" may only appear if strictly needed to reach the target entry count or make necessary letter crossings work; keep them to a minimum.
+- Target size: between {{MIN_WORDS}} and {{MAX_WORDS}} entries (roughly 50% Across, 50% Down).
+- Maintain tight, balanced intersections (words should cross 2 to 3 other words where possible, no loose dangling branches).
+- The entire puzzle must form ONE single connected web (no disconnected islands).
+- Parallel words must never touch side-by-side or head-to-tail without an empty cell between them.
+- The square immediately before the first letter and immediately after the last letter of every word MUST be empty.
+- Coordinates are zero-based ("row" and "col" indicate the starting cell). "dir" is "A" (Across) or "D" (Down). Normalize so the top-leftmost cell is at row 0, col 0. Do NOT number the clues (the app numbers them automatically).
+- Clues must be clear, textbook-style crossword clues and must NEVER contain the answer word or its obvious stem.
+
+REQUIRED OUTPUT STRUCTURE (inside a single ```json ``` block):
+```json
+{
+  "entries": [
+    {
+      "answer": "CUSTOMERSERVICE",
+      "clue": "Assistance and advice provided by a company to those people who buy or use its products or services.",
+      "dir": "A",
+      "row": 12,
+      "col": 3
+    },
+    {
+      "answer": "LOAN",
+      "clue": "The money lent or made available under a credit arrangement.",
+      "dir": "D",
+      "row": 8,
+      "col": 6
+    }
+  ]
+}
+```
+

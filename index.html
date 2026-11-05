@@ -1,0 +1,2229 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>CrossForge</title>
+  <style>
+    :root {
+      --bg: #f6f6f3;
+      --panel: #f0f0ec;
+      --white: #fff;
+      --ink: #191a17;
+      --muted: #85867e;
+      --line: #e6e6df;
+      --lime: #d7f58a;
+      --green: #eaf5d4;
+      --red: #f9e5e1
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif
+    }
+
+    button,
+    input,
+    select {
+      font: inherit
+    }
+
+    button {
+      cursor: pointer
+    }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr)
+    }
+
+    .sidebar {
+      height: 100vh;
+      position: sticky;
+      top: 0;
+      background: var(--panel);
+      border-right: 1px solid var(--line);
+      padding: 22px 15px;
+      display: flex;
+      flex-direction: column;
+      min-width: 0
+    }
+
+    .brand {
+      font-size: 23px;
+      font-weight: 850;
+      letter-spacing: -1.2px;
+      padding: 0 8px 20px
+    }
+
+    .mark {
+      display: inline-grid;
+      place-items: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 9px;
+      background: var(--lime);
+      margin-right: 8px
+    }
+
+    .side-heading {
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      font-weight: 800;
+      color: var(--muted);
+      text-transform: uppercase;
+      padding: 0 9px 10px
+    }
+
+    .search-wrap {
+      position: relative;
+      margin: 0 4px 14px
+    }
+
+    .search-wrap span {
+      position: absolute;
+      left: 11px;
+      top: 8px;
+      color: var(--muted)
+    }
+
+    .search {
+      width: 100%;
+      border: 1px solid #deded6;
+      background: #fff;
+      border-radius: 9px;
+      padding: 9px 10px 9px 30px;
+      font-size: 12px;
+      outline: none
+    }
+
+    .tree {
+      overflow: auto;
+      flex: 1;
+      min-height: 0
+    }
+
+    .folder {
+      display: flex;
+      gap: 8px;
+      padding: 9px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 750;
+      color: #50524b;
+      white-space: nowrap;
+      overflow: hidden
+    }
+
+    .word-list {
+      display: grid;
+      gap: 2px;
+      padding: 2px 0 10px 13px
+    }
+
+    .word-item {
+      border: 0;
+      background: transparent;
+      text-align: left;
+      padding: 8px 9px;
+      border-radius: 8px;
+      color: #65675f;
+      font-size: 12px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis
+    }
+
+    .word-item:hover,
+    .word-item.active {
+      background: #fff;
+      color: var(--ink)
+    }
+
+    .word-item.active {
+      font-weight: 750
+    }
+
+    .sidebar-bottom {
+      border-top: 1px solid #dfdfd8;
+      padding: 13px 8px 0;
+      color: var(--muted);
+      font-size: 10px
+    }
+
+    .main {
+      min-width: 0;
+      padding: 0 clamp(18px, 4vw, 56px) 45px
+    }
+
+    .topbar {
+      height: 70px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+      gap: 12px
+    }
+
+    .navbar {
+      display: flex;
+      gap: 6px
+    }
+
+    .navbtn {
+      border: 0;
+      background: transparent;
+      color: #73756c;
+      padding: 9px 13px;
+      border-radius: 9px;
+      font-size: 12px;
+      font-weight: 750
+    }
+
+    .navbtn.active {
+      background: var(--lime);
+      color: var(--ink);
+      box-shadow: 0 1px 3px #0000000a
+    }
+
+    .navbar {
+      background: #efefe9;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      padding: 3px
+    }
+
+    .navbtn {
+      white-space: nowrap
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px
+    }
+
+    .set-count {
+      font-size: 11px;
+      color: var(--muted)
+    }
+
+    .import {
+      background: var(--ink);
+      color: #fff;
+      border: 0;
+      border-radius: 9px;
+      padding: 10px 14px;
+      font-size: 11px;
+      font-weight: 750
+    }
+
+    .view {
+      display: none
+    }
+
+    .view.active {
+      display: block
+    }
+
+    .stage {
+      width: 100%;
+      max-width: 850px;
+      margin: 0 auto;
+    }
+
+    .eyebrow {
+      font-size: 10px;
+      letter-spacing: 1.6px;
+      color: var(--muted);
+      font-weight: 800;
+      text-transform: uppercase
+    }
+
+    h1 {
+      font-size: clamp(27px, 3.4vw, 40px);
+      letter-spacing: -1.6px;
+      margin: 8px 0 26px
+    }
+
+    .flip-card {
+      height: 360px;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform .65s;
+      cursor: pointer
+    }
+
+    .flip-card.flipped {
+      transform: rotateY(180deg)
+    }
+
+    .face {
+      position: absolute;
+      inset: 0;
+      backface-visibility: hidden;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: #fff;
+      box-shadow: 0 16px 45px #171a100b;
+      padding: 25px 30px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between
+    }
+
+    .face.back {
+      transform: rotateY(180deg);
+      background: #fcfff6
+    }
+
+    .meta {
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: 10px;
+      letter-spacing: 1.2px;
+      font-weight: 800
+    }
+
+    .word-stage {
+      flex: 1;
+      display: grid;
+      place-items: center;
+      text-align: center
+    }
+
+    .word {
+      font-size: clamp(40px, 6vw, 68px);
+      font-weight: 850;
+      letter-spacing: -2.5px
+    }
+
+    .underline {
+      height: 5px;
+      width: 95px;
+      background: var(--lime);
+      border-radius: 8px;
+      margin: 14px auto
+    }
+
+    .hint {
+      text-align: center;
+      font-size: 10px;
+      letter-spacing: 1px;
+      color: var(--muted)
+    }
+
+    .back-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 23px;
+      padding: 12px 4px
+    }
+
+    .definition-label,
+    .key-label {
+      font-size: 10px;
+      letter-spacing: 1.3px;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 850;
+      margin-bottom: 8px
+    }
+
+    .definition {
+      font-size: 20px;
+      line-height: 1.5
+    }
+
+    .key-definition {
+      font-size: 19px;
+      line-height: 1.4;
+      font-weight: 800
+    }
+
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 14px
+    }
+
+    .controls-right {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    #studyView {
+      min-height: calc(100vh - 120px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #studyView.view:not(.active) {
+      display: none !important;
+    }
+
+    .controls button,
+    .secondary {
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 9px;
+      padding: 9px 13px;
+      font-size: 11px;
+      font-weight: 750
+    }
+
+    .controls button:disabled {
+      opacity: .4
+    }
+
+    .counter {
+      font-size: 11px;
+      color: var(--muted)
+    }
+
+    /* crossword */
+    .cross-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin-bottom: 18px
+    }
+
+    .cross-head h1 {
+      margin: 7px 0 5px
+    }
+
+    .muted {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.5
+    }
+
+    .setup,
+    .puzzle,
+    .results {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #fff;
+      padding: 20px
+    }
+
+    .setup-grid {
+      display: flex;
+      gap: 14px;
+      align-items: end;
+      flex-wrap: wrap;
+      margin-top: 16px
+    }
+
+    .field label {
+      display: block;
+      font-size: 10px;
+      font-weight: 800;
+      color: var(--muted);
+      letter-spacing: 1px;
+      margin-bottom: 7px
+    }
+
+    .field select,
+    .field input {
+      border: 1px solid var(--line);
+      background: #fafaf8;
+      border-radius: 9px;
+      padding: 10px 12px;
+      font-size: 12px;
+      min-width: 130px
+    }
+
+    .primary {
+      border: 0;
+      background: var(--ink);
+      color: #fff;
+      border-radius: 9px;
+      padding: 11px 17px;
+      font-size: 12px;
+      font-weight: 800
+    }
+
+    .puzzle {
+      display: none
+    }
+
+    .puzzle-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 16px
+    }
+
+    .timer {
+      font-size: 21px;
+      font-weight: 850;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -.6px
+    }
+
+    .timer.warning {
+      color: #b14b35
+    }
+
+    .puzzle-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 22px;
+      align-items: start
+    }
+
+    .grid-scroll {
+      overflow: auto;
+      padding: 4px 0 10px
+    }
+
+    .cross-grid {
+      display: grid;
+      gap: 2px;
+      width: max-content;
+      margin: 8px auto 16px;
+      background: #cfcfc8;
+      padding: 4px;
+      border-radius: 5px
+    }
+
+    .cell {
+      width: 31px;
+      height: 31px;
+      position: relative;
+      background: #fff;
+      border-radius: 1px
+    }
+
+    .cell.black {
+      background: #292b27
+    }
+
+    .cell input {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: transparent;
+      text-align: center;
+      text-transform: uppercase;
+      font-size: 17px;
+      font-weight: 800;
+      outline: none;
+      padding: 0;
+      color: #171815
+    }
+
+    .cell input:focus {
+      background: #eff8dc;
+      box-shadow: inset 0 0 0 2px #9fbd62
+    }
+
+    .cell .num {
+      position: absolute;
+      top: 1px;
+      left: 2px;
+      font-size: 8px;
+      color: #55584f;
+      pointer-events: none;
+      z-index: 1
+    }
+
+    .cell input.correct {
+      background: #e5f3d5
+    }
+
+    .cell input.wrong {
+      background: #f9e5e1
+    }
+
+    .clues {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      border-top: 1px solid var(--line);
+      padding-top: 18px
+    }
+
+    .clue-section h3 {
+      font-size: 12px;
+      margin: 0 0 8px;
+      letter-spacing: .7px
+    }
+
+    .clue {
+      display: grid;
+      grid-template-columns: 24px 1fr;
+      gap: 7px;
+      padding: 7px 8px;
+      border-radius: 7px;
+      font-size: 11px;
+      line-height: 1.4;
+      cursor: pointer
+    }
+
+    .clue:hover,
+    .clue.selected {
+      background: #f1f4e9
+    }
+
+    .clue strong {
+      font-size: 10px;
+      color: #777
+    }
+
+    .puzzle-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 16px
+    }
+
+    .results {
+      display: none;
+      margin-top: 16px
+    }
+
+    .result-score {
+      font-size: 30px;
+      font-weight: 850;
+      letter-spacing: -1px;
+      margin: 8px 0
+    }
+
+    .result-stats {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      font-size: 12px;
+      color: var(--muted)
+    }
+
+    .result-stats b {
+      color: var(--ink)
+    }
+
+    .empty {
+      border: 1px dashed #ccc;
+      border-radius: 16px;
+      padding: 28px;
+      text-align: center;
+      color: var(--muted)
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #191a17;
+      color: #fff;
+      padding: 10px 14px;
+      border-radius: 9px;
+      font-size: 11px;
+      opacity: 0;
+      transition: opacity .2s;
+      pointer-events: none
+    }
+
+    .toast.show {
+      opacity: 1
+    }
+
+    @media(max-width:850px) {
+      .app {
+        grid-template-columns: 220px 1fr
+      }
+
+      .puzzle-layout {
+        grid-template-columns: 1fr
+      }
+
+      .clues {
+        grid-template-columns: 1fr 1fr
+      }
+    }
+
+    @media(max-width:650px) {
+      .app {
+        grid-template-columns: 1fr
+      }
+
+      .sidebar {
+        position: relative;
+        height: 235px;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+        padding: 12px
+      }
+
+      .brand {
+        padding-bottom: 10px
+      }
+
+      .tree {
+        max-height: 90px
+      }
+
+      .sidebar-bottom {
+        display: none
+      }
+
+      .main {
+        padding: 0 12px 30px
+      }
+
+      .topbar {
+        height: auto;
+        min-height: 62px;
+        flex-wrap: wrap;
+        padding: 10px 0;
+        margin-bottom: 23px
+      }
+
+      .navbar {
+        order: 2;
+        width: 100%
+      }
+
+      .top-actions {
+        margin-left: auto
+      }
+
+      .flip-card {
+        height: 330px
+      }
+
+      .face {
+        padding: 20px
+      }
+
+      .cell {
+        width: 25px;
+        height: 25px
+      }
+
+      .cell input {
+        font-size: 13px
+      }
+
+      .clues {
+        grid-template-columns: 1fr 1fr;
+        gap: 12px
+      }
+
+      .clue {
+        font-size: 10px;
+        padding: 6px 4px
+      }
+    }
+
+    /* Dark workspace */
+    :root {
+      color-scheme: dark;
+      --bg: #10110f;
+      --panel: #171916;
+      --white: #1b1e19;
+      --ink: #f0f1e9;
+      --muted: #a0a397;
+      --line: #30342d;
+      --lime: #bce66b;
+      --green: #283820;
+      --red: #482a26
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      overflow-x: hidden
+    }
+
+    .sidebar {
+      background: #151713;
+      border-color: var(--line)
+    }
+
+    .brand,
+    .word {
+      color: var(--ink)
+    }
+
+    .search,
+    .field select,
+    .field input {
+      background: #20231e;
+      border-color: #3a3e35;
+      color: var(--ink)
+    }
+
+    .search::placeholder {
+      color: #85897d
+    }
+
+    .folder {
+      color: #c4c8bb
+    }
+
+    .word-item {
+      color: #b2b6a9
+    }
+
+    .word-item:hover,
+    .word-item.active {
+      background: #292e24;
+      color: #f7f8ef
+    }
+
+    .sidebar-bottom {
+      border-color: var(--line)
+    }
+
+    .topbar {
+      border-color: var(--line)
+    }
+
+    .navbar {
+      background: #191c17;
+      border-color: #34382f
+    }
+
+    .navbtn {
+      color: #aeb3a4
+    }
+
+    .navbtn.active {
+      background: var(--lime);
+      color: #151811
+    }
+
+    .import,
+    .primary {
+      background: var(--lime);
+      color: #151811
+    }
+
+    .import:hover,
+    .primary:hover {
+      filter: brightness(1.06)
+    }
+
+    .secondary,
+    .controls button {
+      background: #20231e;
+      border-color: #3a3e35;
+      color: var(--ink)
+    }
+
+    .setup,
+    .puzzle,
+    .results,
+    .face {
+      background: #1a1d18;
+      border-color: #34382f;
+      color: var(--ink)
+    }
+
+    .face.back {
+      background: #1c2118
+    }
+
+    .muted,
+    .set-count,
+    .counter,
+    .hint,
+    .meta {
+      color: var(--muted)
+    }
+
+    .eyebrow {
+      color: #b3c18f
+    }
+
+    .cell {
+      background: #e8eadf
+    }
+
+    .cell.black {
+      background: #080907
+    }
+
+    .cell input {
+      color: #161912
+    }
+
+    .cell .num {
+      color: #4f5548
+    }
+
+    .cell input:focus {
+      background: #d9efad;
+      box-shadow: inset 0 0 0 2px #8ead50
+    }
+
+    .cell input.correct {
+      background: #bfe69a;
+      color: #17200f
+    }
+
+    .cell input.wrong {
+      background: #f2b2a5 !important;
+      color: #35130e !important;
+      font-weight: 850;
+    }
+    .cell input.correct {
+      background: #bfe69a !important;
+      color: #17200f !important;
+      font-weight: 850;
+    }
+    .cell input.unattempted {
+      background: #3a3e35 !important;
+      color: #a0a397 !important;
+      font-weight: 700;
+    }
+    .cell input:disabled {
+      opacity: 1 !important;
+      cursor: default;
+    }
+
+    .cross-grid {
+      background: #080907
+    }
+
+    .clues {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 18px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 16px;
+      background: #171a15;
+      max-height: 620px;
+      overflow: auto
+    }
+
+    .clue-section h3 {
+      color: #dce5c8
+    }
+
+    .clue {
+      color: #d2d6ca
+    }
+
+    .clue strong {
+      color: #b8c58e
+    }
+
+    .clue:hover,
+    .clue.selected {
+      background: #2a3122
+    }
+
+    .results {
+      color: var(--ink)
+    }
+
+    .result-stats {
+      color: var(--muted)
+    }
+
+    .result-stats b {
+      color: var(--ink)
+    }
+
+    .empty {
+      background: #181b16;
+      border-color: #41463b;
+      color: var(--muted)
+    }
+
+    .toast {
+      background: #e0f4b4;
+      color: #151811
+    }
+
+    .mobile-question-tabs,
+    .mobile-drawer-head {
+      display: none
+    }
+
+    @media(min-width:851px) {
+      .puzzle-layout {
+        grid-template-columns: minmax(0, 1fr) 310px;
+        gap: 22px;
+        align-items: start
+      }
+
+      .grid-scroll {
+        min-width: 0
+      }
+
+      .cross-grid {
+        margin: 8px auto 16px
+      }
+
+      .clues {
+        grid-template-columns: 1fr;
+        max-height: calc(100vh - 250px);
+        position: sticky;
+        top: 18px
+      }
+    }
+
+    @media(max-width:850px) {
+      .mobile-question-tabs {
+        display: flex;
+        gap: 4px;
+        padding: 3px;
+        border: 1px solid var(--line);
+        background: #191c17;
+        border-radius: 9px
+      }
+
+      .question-tab {
+        border: 0;
+        border-radius: 7px;
+        background: transparent;
+        color: #aeb3a4;
+        padding: 7px 10px;
+        font-size: 10px;
+        font-weight: 800
+      }
+
+      .question-tab.active {
+        background: var(--lime);
+        color: #151811
+      }
+
+      .puzzle-layout {
+        display: block
+      }
+
+      .clues {
+        display: none;
+        position: fixed;
+        z-index: 1001;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: min(88vw, 390px);
+        max-height: none;
+        border-radius: 0;
+        border: 0;
+        border-left: 1px solid #3b4035;
+        padding: 18px 16px 28px;
+        background: #171a15;
+        box-shadow: -20px 0 60px #0009;
+        overflow: auto
+      }
+
+      .clues.drawer-open {
+        display: flex;
+        flex-direction: column
+      }
+
+      .mobile-drawer-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--line);
+        color: var(--ink)
+      }
+
+      .drawer-close {
+        border: 1px solid var(--line);
+        background: #242820;
+        color: var(--ink);
+        border-radius: 8px;
+        padding: 6px 9px
+      }
+
+      .clues .clue-section {
+        display: block
+      }
+
+      .grid-scroll {
+        display: block
+      }
+
+      body.drawer-active:after {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background: #0008;
+        z-index: 1000
+      }
+    }
+
+    @media(max-width:650px) {
+      .clues {
+        grid-template-columns: 1fr
+      }
+
+      .clue {
+        font-size: 12px;
+        padding: 9px 8px
+      }
+
+      .cell {
+        width: 25px;
+        height: 25px
+      }
+
+      .cell input {
+        font-size: 13px
+      }
+    }
+
+    /* Full-screen solver workspace: hide the file explorer and use the entire laptop canvas. */
+    .app.crossword-mode {
+      grid-template-columns: minmax(0, 1fr);
+      width: 100vw;
+      overflow: hidden
+    }
+
+    .app.crossword-mode>.sidebar {
+      display: none !important;
+      width: 0 !important;
+      min-width: 0 !important;
+      padding: 0 !important;
+      border: 0 !important
+    }
+
+    .app.crossword-mode>.main {
+      width: 100%;
+      max-width: none;
+      min-width: 0;
+      padding: 0 16px 8px;
+      overflow: hidden
+    }
+
+    .app.crossword-mode .topbar {
+      margin-bottom: 12px;
+      height: 62px
+    }
+
+    .app.crossword-mode.solving-crossword .topbar {
+      display: none !important;
+    }
+    .app.crossword-mode #crosswordView {
+      height: 100vh;
+      overflow-y: auto !important;
+      overflow-x: hidden;
+      min-width: 0;
+      scroll-behavior: smooth;
+    }
+    .app.crossword-mode.solving-crossword #crosswordView {
+      height: 100vh;
+    }
+    .app.crossword-mode .puzzle {
+      min-height: calc(100vh - 40px);
+      padding: 12px 16px;
+      display: flex;
+      flex-direction: column;
+      overflow: visible;
+    }
+    .app.crossword-mode .results {
+      margin-top: 24px;
+      margin-bottom: 40px;
+      border: 1px solid var(--line);
+      background: #171a15;
+      border-radius: 14px;
+      padding: 22px;
+    }
+    .results-grid-layout {
+      display: grid;
+      grid-template-columns: minmax(320px, 1.2fr) minmax(300px, 1fr);
+      gap: 24px;
+      align-items: start;
+    }
+    @media(max-width: 800px) {
+      .results-grid-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+    .results-words-col {
+      background: #131512;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 16px;
+      max-height: 380px;
+      overflow-y: auto;
+    }
+    .results-words-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .sol-word-item {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      gap: 10px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      background: #1b1e19;
+      border: 1px solid #282c23;
+      font-size: 12px;
+      align-items: center;
+    }
+    .sol-word-item.was-correct {
+      border-color: #435e29;
+      background: #1d2516;
+    }
+    .sol-word-tag {
+      font-weight: 850;
+      color: var(--lime);
+      font-size: 11px;
+      letter-spacing: 0.5px;
+    }
+    .sol-word-name {
+      font-weight: 750;
+      color: var(--ink);
+    }
+    .sol-word-status {
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      float: right;
+    }
+    .sol-word-status.ok {
+      background: #2b3d1b;
+      color: #bfe69a;
+    }
+    .sol-word-status.missed {
+      background: #2b2524;
+      color: #d2a49f;
+    }
+
+    .app.crossword-mode #crosswordView>.cross-head {
+      display: none
+    }
+
+    .app.crossword-mode .puzzle {
+      height: 100%;
+      padding: 12px 16px;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden
+    }
+
+    .app.crossword-mode .puzzle-top {
+      flex: 0 0 auto;
+      margin-bottom: 10px
+    }
+
+    .app.crossword-mode .puzzle-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(320px, 29vw);
+      gap: 14px;
+      flex: 1 1 auto;
+      min-width: 0;
+      min-height: 0;
+      height: auto;
+      align-items: stretch;
+      overflow: hidden
+    }
+
+    .app.crossword-mode .grid-scroll {
+      overflow: hidden !important;
+      min-width: 0;
+      min-height: 0;
+      width: 100%;
+      max-width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0
+    }
+
+    .app.crossword-mode .cross-grid {
+      margin: 0;
+      max-width: 100%;
+      max-height: 100%;
+      width: max-content;
+      gap: 1px;
+      padding: 2px;
+      overflow: hidden
+    }
+
+    .app.crossword-mode .cell {
+      width: var(--solver-cell, 30px);
+      height: var(--solver-cell, 30px)
+    }
+
+    .app.crossword-mode .clues {
+      display: flex;
+      flex-direction: column;
+      grid-template-columns: 1fr;
+      height: 100%;
+      max-height: none;
+      min-height: 0;
+      overflow-y: auto;
+      overflow-x: hidden;
+      overscroll-behavior: contain
+    }
+
+    .app.crossword-mode .puzzle-actions {
+      flex: 0 0 auto;
+      margin-top: 10px
+    }
+
+    .app.crossword-mode .mobile-question-tabs {
+      display: none
+    }
+
+    .app.crossword-mode .mobile-drawer-head {
+      display: none
+    }
+
+    @media(max-width:850px) {
+      .app.crossword-mode>.main {
+        padding: 0 10px 8px
+      }
+
+      .app.crossword-mode .puzzle-layout {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 8px
+      }
+
+      .app.crossword-mode .clues {
+        display: flex;
+        position: static;
+        width: auto;
+        max-height: none;
+        height: 100%;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 9px;
+        background: #171a15;
+        box-shadow: none
+      }
+
+      .app.crossword-mode .mobile-question-tabs {
+        display: flex
+      }
+
+      .app.crossword-mode .mobile-drawer-head {
+        display: none
+      }
+    }
+
+    @media(max-width:650px) {
+      .app.crossword-mode #crosswordView {
+        height: calc(100vh - 116px)
+      }
+
+      .app.crossword-mode .puzzle-layout {
+        display: block;
+        position: relative
+      }
+
+      .app.crossword-mode .grid-scroll {
+        height: 100%;
+        width: 100%;
+        overflow: hidden
+      }
+
+      .app.crossword-mode .clues {
+        display: none;
+        position: fixed;
+        z-index: 1001;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: min(88vw, 390px);
+        height: auto;
+        max-height: none;
+        border-radius: 0;
+        border: 0;
+        border-left: 1px solid #3b4035;
+        padding: 18px 16px 28px;
+        background: #171a15;
+        box-shadow: -20px 0 60px #0009;
+        overflow: auto
+      }
+
+      .app.crossword-mode .clues.drawer-open {
+        display: flex
+      }
+
+      .app.crossword-mode .mobile-drawer-head {
+        display: flex
+      }
+
+      .app.crossword-mode .puzzle {
+        padding: 9px
+      }
+
+      .app.crossword-mode .puzzle-top {
+        gap: 5px
+      }
+
+      .app.crossword-mode .puzzle-actions {
+        padding-bottom: 2px
+      }
+    }
+
+    [hidden] {
+      display: none !important
+    }
+
+    .gate {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 20px
+    }
+
+    .gate-card {
+      width: min(380px, 100%);
+      background: #1a1d18;
+      border: 1px solid #34382f;
+      border-radius: 16px;
+      padding: 26px;
+      display: grid;
+      gap: 12px
+    }
+
+    .gate-card h2 {
+      margin: 0 0 4px;
+      letter-spacing: -.8px
+    }
+
+    .gate-card input {
+      width: 100%;
+      border: 1px solid #3a3e35;
+      background: #20231e;
+      color: var(--ink);
+      border-radius: 9px;
+      padding: 11px 12px;
+      font-size: 13px
+    }
+
+    .err {
+      color: #f2b2a5;
+      font-size: 12px;
+      min-height: 16px
+    }
+
+    .spec-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: #000a;
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+      padding: 16px
+    }
+
+    .spec-modal.open {
+      display: flex
+    }
+
+    .spec-box {
+      background: #1a1d18;
+      border: 1px solid #34382f;
+      border-radius: 16px;
+      padding: 22px;
+      width: min(780px, 100%);
+      max-height: 94vh;
+      overflow: auto;
+      color: var(--ink)
+    }
+
+    .spec-box textarea,
+    .admin textarea {
+      width: 100%;
+      height: 200px;
+      background: #20231e;
+      border: 1px solid #3a3e35;
+      color: var(--ink);
+      border-radius: 9px;
+      padding: 10px;
+      font: 12px/1.4 Consolas, monospace;
+      resize: vertical
+    }
+
+    .spec-err {
+      color: #f2b2a5;
+      font-size: 12px;
+      min-height: 18px;
+      margin: 8px 0
+    }
+
+    .step {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: var(--muted);
+      margin: 14px 0 6px;
+      text-transform: uppercase
+    }
+
+    .word-item .tick {
+      color: var(--lime);
+      margin-left: 6px
+    }
+
+    .done-btn.on {
+      background: var(--lime) !important;
+      color: #151811 !important
+    }
+
+    .admin {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 20px
+    }
+
+    .admin-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px
+    }
+
+    .panel {
+      border: 1px solid #34382f;
+      background: #1a1d18;
+      border-radius: 14px;
+      padding: 18px;
+      margin-bottom: 16px
+    }
+
+    table.t {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px
+    }
+
+    table.t th {
+      text-align: left;
+      color: var(--muted);
+      font-size: 10px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 8px;
+      border-bottom: 1px solid var(--line)
+    }
+
+    table.t td {
+      padding: 8px;
+      border-bottom: 1px solid #262a22;
+      vertical-align: top
+    }
+
+    .bar {
+      height: 7px;
+      background: #2a2e25;
+      border-radius: 6px;
+      overflow: hidden;
+      min-width: 90px
+    }
+
+    .bar i {
+      display: block;
+      height: 100%;
+      background: var(--lime)
+    }
+
+    .mini {
+      border: 1px solid var(--line);
+      background: #20231e;
+      color: var(--ink);
+      border-radius: 7px;
+      padding: 5px 9px;
+      font-size: 11px
+    }
+
+    .mini.danger {
+      color: #f2b2a5
+    }
+
+    .linkbtn {
+      background: none;
+      border: 0;
+      color: var(--muted);
+      font-size: 11px;
+      text-decoration: underline
+    }
+
+    .puzzle-actions .hintline {
+      font-size: 11px;
+      color: var(--muted);
+      align-self: center
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ============ USER LOGIN ============ -->
+  <div class="gate" id="loginScreen" hidden>
+    <form class="gate-card" id="loginForm">
+      <div class="brand" style="padding:0"><span class="mark">↗</span>crossforge</div>
+      <h2>Log in</h2><input id="lgUser" placeholder="Username" autocomplete="username" autocapitalize="none"><input
+        id="lgPass" type="password" placeholder="Password" autocomplete="current-password">
+      <div class="err" id="lgErr"></div><button class="primary" type="submit">Log in</button>
+    </form>
+  </div>
+
+  <!-- ============ ADMIN (/admin117) ============ -->
+  <div id="adminScreen" hidden>
+    <div class="gate" id="adminGate">
+      <form class="gate-card" id="adminForm">
+        <div class="brand" style="padding:0"><span class="mark">↗</span>crossforge admin</div><input id="adPass"
+          type="password" placeholder="Admin password" autocomplete="current-password">
+        <div class="err" id="adErr"></div><button class="primary" type="submit">Enter</button>
+      </form>
+    </div>
+    <div class="admin" id="adminMain" hidden>
+      <div class="admin-top">
+        <nav class="navbar"><button class="navbtn active" data-tab="app">App</button><button class="navbtn"
+            data-tab="users">User management</button></nav><button class="secondary" id="adLogout">Log out</button>
+      </div>
+      <section id="tabApp">
+        <div class="panel">
+          <div class="eyebrow">Import words</div>
+          <div class="puzzle-actions" style="margin:4px 0 10px"><button class="secondary" id="copyImpPrompt">Copy
+              prompt</button><span class="hintline">Edit the prompt text in <b>import_prompt.txt</b>. Each import should
+              return 50 new words; words already in your list are added to the prompt automatically so they are not
+              repeated.</span></div>
+          <p class="muted">Paste JSON or upload a file. Format:
+            <code>{"words":[{"word":"Loan","definition":"...","key_definition":"...","source":"B11"}]}</code>
+            (key_definition and source are optional) or a plain array. Words that already exist (same spelling) are
+            updated with the new definition / key definition. There are no sets: every word goes into one shared list.
+          </p>
+          <textarea id="impText"
+            placeholder='{"words":[{"word":"Loan","definition":"Money lent or made available under a credit arrangement."}]}'
+            spellcheck="false"></textarea>
+          <div class="puzzle-actions"><button class="primary" id="impBtn">Import words</button><button class="secondary"
+              id="impFileBtn">Upload JSON file</button><input type="file" id="impFile" accept=".json,application/json"
+              hidden><span class="hintline" id="impMsg"></span></div>
+        </div>
+        <div class="panel">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+            <div class="eyebrow" id="wordsTitle">Words</div><button class="mini danger" id="delSet">Delete most recent
+              set</button> <button class="mini danger" id="clearWords">Delete all
+              words</button>
+          </div>
+          <div style="max-height:420px;overflow:auto;margin-top:8px">
+            <table class="t" id="wordsTable"></table>
+          </div>
+        </div>
+      </section>
+      <section id="tabUsers" hidden>
+        <div class="panel">
+          <div class="eyebrow">Create user</div>
+          <div class="setup-grid">
+            <div class="field"><label>USERNAME</label><input id="nuName" autocapitalize="none"></div>
+            <div class="field"><label>PASSWORD</label><input id="nuPass"></div><button class="primary" id="nuBtn">Create
+              user</button>
+          </div>
+          <div class="err" id="nuMsg" style="margin-top:8px"></div>
+        </div>
+        <div class="panel">
+          <div class="eyebrow">Users and progress</div>
+          <div style="overflow:auto;margin-top:8px">
+            <table class="t" id="usersTable"></table>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- ============ LEARNER APP ============ -->
+  <div class="app" id="app" hidden>
+    <aside class="sidebar">
+      <div class="brand"><span class="mark">↗</span>crossforge</div>
+      <div class="side-heading">Words</div>
+      <div style="position:relative;margin:0 4px 12px"><span
+          style="position:absolute;left:10px;top:8px;color:#888">⌕</span><input id="search" class="search"
+          placeholder="Search words..."></div>
+      <div class="tree">
+        <div id="wordList" class="word-list"></div>
+      </div>
+      <div class="sidebar-bottom" id="fileCount"></div>
+    </aside>
+    <main class="main">
+      <header class="topbar">
+        <nav class="navbar"><button class="navbtn active" data-view="study">Learn words</button><button class="navbtn"
+            data-view="crossword">Solve a crossword</button></nav>
+        <div class="top-actions"><span class="set-count" id="setCount"></span><button class="import" id="logoutBtn">Log
+            out</button></div>
+      </header>
+      <section class="view active" id="studyView">
+        <div class="stage">
+          <div class="eyebrow">Vocabulary cards</div>
+          <div id="flipCard" class="flip-card" tabindex="0" role="button">
+            <div class="face front">
+              <div class="meta"><span id="doneBadge"></span><span id="frontIndex">01</span></div>
+              <div class="word-stage">
+                <div>
+                  <div class="word" id="word"></div>
+                  <div class="underline"></div>
+                </div>
+              </div>
+              <div class="hint">CLICK TO FLIP</div>
+            </div>
+            <div class="face back">
+              <div class="meta"><span>WORD EXPLANATION</span><span id="backWord"></span></div>
+              <div class="back-body">
+                <div>
+                  <div class="definition-label">Definition</div>
+                  <div class="definition" id="definition"></div>
+                </div>
+                <div>
+                  <div class="key-label">Key definition · Easy to remember</div>
+                  <div class="key-definition" id="keyDefinition"></div>
+                </div>
+              </div>
+              <div class="hint">CLICK TO FLIP BACK</div>
+            </div>
+          </div>
+          <div class="controls"><button id="prev">← Previous</button>
+            <div class="controls-right"><button id="doneBtn" class="done-btn">Mark as done</button><button
+                id="next">Next →</button></div>
+          </div>
+        </div>
+      </section>
+      <section class="view" id="crosswordView">
+        <div class="setup" id="setup">
+          <div class="eyebrow">Crossword</div>
+          <div style="font-size:14px;font-weight:750;margin-top:6px" id="cwInfo"></div>
+          <p class="muted" style="margin-top:10px">Only words you have marked as <b>done</b> are used. Press <b>Generate
+              crossword</b>, copy the prompt into ChatGPT, then paste the JSON it gives you. Use <b>From scratch</b> to
+            forget which words were used before and start again with a fresh random pick from all your done words.</p>
+          <div class="setup-grid"><button class="primary" id="startPuzzle">Generate crossword</button><button
+              class="secondary" id="scratchBtn">From scratch</button></div>
+        </div>
+        <div class="puzzle" id="puzzle">
+          <div class="puzzle-top">
+            <div>
+              <div class="eyebrow">Your crossword</div>
+              <div class="muted" id="puzzleMeta"></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px">
+              <div class="timer" id="timer">05:00</div>
+              <div class="mobile-question-tabs"><button class="question-tab active"
+                  id="puzzleTab">Puzzle</button><button class="question-tab" id="questionsTab">Questions</button></div>
+            </div>
+          </div>
+          <div class="puzzle-layout">
+            <div class="grid-scroll" id="gridPanel">
+              <div class="cross-grid" id="crossGrid"></div>
+            </div>
+            <aside class="clues" id="questionsPanel">
+              <div class="mobile-drawer-head"><strong>Questions</strong><button class="drawer-close"
+                  id="closeQuestions">✕</button></div>
+              <div class="clue-section">
+                <h3>ACROSS</h3>
+                <div id="acrossClues"></div>
+              </div>
+              <div class="clue-section">
+                <h3>DOWN</h3>
+                <div id="downClues"></div>
+              </div>
+            </aside>
+          </div>
+          <div class="puzzle-actions"><button class="primary" id="submitPuzzle">Submit answers</button></div>
+        </div>
+        <div class="results" id="results">
+          <div class="results-grid-layout">
+            <div class="results-main-col">
+              <div class="eyebrow">Puzzle result</div>
+              <h2 id="resultTitle">Completed</h2>
+              <div class="result-score" id="score">0%</div>
+              <div class="result-stats" id="resultStats"></div>
+              <div class="puzzle-actions" style="margin-top:16px; display:flex; gap:10px; flex-wrap:wrap;">
+                <button class="primary" id="tryAgain">Try another crossword</button>
+                <button class="secondary" id="goToLearn">Go to learn</button>
+              </div>
+            </div>
+            <div class="results-words-col">
+              <div class="eyebrow" style="margin-bottom:8px;">Correct Answers by Question Number</div>
+              <div class="results-words-list" id="correctWordsList"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- ============ PROMPT / IMPORT MODAL ============ -->
+  <div class="spec-modal" id="specModal">
+    <div class="spec-box">
+      <div class="eyebrow">Build a crossword</div>
+      <div class="step">1 · Copy the prompt into ChatGPT</div>
+      <p class="muted">Copies the crossword constructor prompt along with all your completed words. This scratch feature
+        will take all words that you have marked as done and generate the cross word in random </p>
+      <div class="puzzle-actions" style="margin:8px 0; gap:8px; display:flex; flex-wrap:wrap;">
+        <button class="primary" id="copyFollow">Copy follow-up prompt (same chat)</button>
+        <button class="secondary" id="copyFull">Copy full prompt (new chat)</button>
+      </div>
+      <div class="step">2 · Paste the JSON it returns</div>
+      <textarea id="specText" placeholder='{"entries":[{"answer":"LOAN","clue":"...","dir":"A","row":3,"col":2}, ...]}'
+        spellcheck="false"></textarea>
+      <div class="puzzle-actions" style="margin-top:6px"><button class="secondary" id="specFileBtn">Upload JSON
+          file</button><input type="file" id="specFile" accept=".json,application/json" hidden></div>
+      <div class="step">3 · Timer</div>
+      <div class="field"><select id="minutes">
+          <option value="5">5 minutes</option>
+          <option value="8">8 minutes</option>
+          <option value="10">10 minutes</option>
+          <option value="15" selected>15 minutes</option>
+          <option value="20">20 minutes</option>
+          <option value="30">30 minutes</option>
+          <option value="45">45 minutes</option>
+          <option value="60">60 minutes</option>
+        </select></div>
+      <div class="spec-err" id="specErr"></div>
+      <div class="puzzle-actions"><button class="primary" id="specBuild">Build crossword &amp; start
+          timer</button><button class="secondary" id="specCancel">Cancel</button></div>
+    </div>
+  </div>
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const $ = id => document.getElementById(id);
+    const SB = 'https://aquqgksepekcoqatkvzt.supabase.co', KEY = 'sb_publishable_X8xpUyb8_45n2VUffvnhLQ_ZyEWlTXq';
+    async function rpc(fn, args) {
+      const r = await fetch(`${SB}/rest/v1/rpc/${fn}`, { method: 'POST', headers: { apikey: KEY, 'Content-Type': 'application/json' }, body: JSON.stringify(args || {}) });
+      const t = await r.text(); let j; try { j = JSON.parse(t) } catch { j = t }
+      if (!r.ok) throw Error((j && j.message) || String(t) || 'Request failed'); return j;
+    }
+    const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    function toast(s) { $('toast').textContent = s; $('toast').classList.add('show'); setTimeout(() => $('toast').classList.remove('show'), 1800) }
+    function cleanAnswer(s) { return String(s || '').toUpperCase().replace(/[^A-Z]/g, '') }
+    function shortDef(s) { let t = String(s || '').trim().replace(/^(the action or process of|the practice of|a process whereby|a process in which|a person who|a business owned by|an amount of money|a sum of money)\s+/i, ''); let f = t.split(/[;.!?]/)[0].trim(); if (f.length > 90) f = f.split(/\s+/).slice(0, 14).join(' ') + '…'; return f.charAt(0).toUpperCase() + f.slice(1) + (/[.!?…]$/.test(f) ? '' : '.') }
+    const isAdminRoute = /admin117/i.test(location.pathname + location.search + location.hash);
+
+    /* =================== ADMIN =================== */
+    let adminPw = sessionStorage.getItem('cw_admin') || '';
+    function initAdmin() {
+      $('adminScreen').hidden = false;
+      const show = () => { $('adminGate').hidden = true; $('adminMain').hidden = false; loadWords(); loadUsers() };
+      if (adminPw) rpc('cw_admin_check', { p_admin: adminPw }).then(show).catch(() => { adminPw = ''; sessionStorage.removeItem('cw_admin') });
+      $('adminForm').onsubmit = async e => { e.preventDefault(); $('adErr').textContent = ''; const p = $('adPass').value; try { await rpc('cw_admin_check', { p_admin: p }); adminPw = p; sessionStorage.setItem('cw_admin', p); show() } catch (err) { $('adErr').textContent = err.message } };
+      $('adLogout').onclick = () => { sessionStorage.removeItem('cw_admin'); location.reload() };
+      document.querySelectorAll('[data-tab]').forEach(b => b.onclick = () => { document.querySelectorAll('[data-tab]').forEach(x => x.classList.toggle('active', x === b)); $('tabApp').hidden = b.dataset.tab !== 'app'; $('tabUsers').hidden = b.dataset.tab !== 'users'; if (b.dataset.tab === 'users') loadUsers() });
+      $('copyImpPrompt').onclick = async () => { try { const r = await fetch('import_prompt.txt?' + Date.now()); if (!r.ok) throw Error('x'); let t = await r.text(); let w = []; try { w = await rpc('cw_admin_words', { p_admin: adminPw }) } catch (e) { } const marker = '[ALREADY IMPORTED BY THE APP'; const i = t.indexOf(marker); const list = w.length ? w.map(x => x.word).join(', ') : '(none yet)'; const block = 'ALREADY IMPORTED (do NOT repeat any of these ' + w.length + ' words):\n' + list; t = i >= 0 ? t.slice(0, i) + block + '\n' : t + '\n' + block + '\n'; try { await navigator.clipboard.writeText(t) } catch (e) { const x = document.createElement('textarea'); x.value = t; document.body.appendChild(x); x.select(); document.execCommand('copy'); x.remove() } toast('Prompt copied (' + w.length + ' existing words excluded)') } catch (e) { alert('Could not load import_prompt.txt. Open the app through a server (python serve.py or Vercel), not by double-clicking the file.') } };
+      $('impFileBtn').onclick = () => $('impFile').click();
+      $('impFile').onchange = async e => { const f = e.target.files[0]; if (f) $('impText').value = await f.text(); e.target.value = '' };
+      $('impBtn').onclick = async () => {
+        $('impMsg').textContent = '';
+        try {
+          const j = JSON.parse($('impText').value.trim()); const a = Array.isArray(j) ? j : (j.words || j.cards);
+          if (!Array.isArray(a) || !a.length) throw Error('JSON needs a non-empty "words" array.');
+          const sid = (String(j.set_id || 'SET').replace(/[^A-Za-z0-9_-]/g, '').slice(0, 20) || 'SET') + '-' + Date.now().toString(36).slice(-5).toUpperCase(); const items = a.map(x => ({ set_id: sid, word: String(x.word || x.term || x.title || '').trim(), definition: String(x.definition || x.meaning || x.explanation || x.clue || '').trim(), key_definition: String(x.key_definition || x.short_definition || '').trim(), source: String(x.source || x.source_worksheet || '').trim() }));
+          const res = await rpc('cw_admin_import', { p_admin: adminPw, p_items: items });
+          $('impMsg').textContent = `Set ${sid}: added or updated ${res.added}, skipped ${res.skipped} (missing fields).`; $('impText').value = ''; loadWords();
+        } catch (err) { $('impMsg').textContent = err.message }
+      };
+      $('delSet').onclick = async () => { if (!lastSet) return; if (!confirm(`Delete the most recent imported set ${lastSet} (${lastSetCount} words) and every user's progress on them?`)) return; try { const r = await rpc('cw_admin_delete_set', { p_admin: adminPw, p_set_id: lastSet }); $('impMsg').textContent = `Deleted ${r.deleted} words from set ${lastSet}.`; loadWords() } catch (e) { alert(e.message) } };
+      $('clearWords').onclick = async () => { if (!confirm('Delete ALL words and every user\'s progress on them?')) return; await rpc('cw_admin_clear_words', { p_admin: adminPw }); loadWords() };
+      $('nuBtn').onclick = async () => { $('nuMsg').textContent = ''; try { await rpc('cw_admin_create_user', { p_admin: adminPw, p_username: $('nuName').value, p_password: $('nuPass').value }); $('nuName').value = ''; $('nuPass').value = ''; $('nuMsg').textContent = 'User created.'; loadUsers() } catch (err) { $('nuMsg').textContent = err.message } };
+    }
+    let lastSet = null, lastSetCount = 0;
+    async function loadWords() {
+      const w = await rpc('cw_admin_words', { p_admin: adminPw }); $('wordsTitle').textContent = `Words (${w.length})`;
+      $('wordsTable').innerHTML = '<tr><th>#</th><th>Word</th><th>Definition</th><th>Key definition</th><th>Source</th><th>Set</th><th></th></tr>' + w.map((x, i) => `<tr><td>${i + 1}</td><td><b>${esc(x.word)}</b></td><td>${esc(x.definition)}</td><td>${esc(x.key_definition || '')}</td><td>${esc(x.source || '')}</td><td><button class="mini danger" data-del="${x.id}">Delete</button></td></tr>`).join('');
+      const last = [...w].reverse().find(x => x.set_id); lastSet = last ? last.set_id : null; lastSetCount = lastSet ? w.filter(x => x.set_id === lastSet).length : 0;
+      $('delSet').textContent = lastSet ? `Delete most recent set (${lastSet}, ${lastSetCount} words)` : 'Delete most recent set'; $('delSet').disabled = !lastSet;
+      $('wordsTable').querySelectorAll('[data-del]').forEach(b => b.onclick = async () => { await rpc('cw_admin_delete_word', { p_admin: adminPw, p_word_id: +b.dataset.del }); loadWords() });
+    }
+    async function loadUsers() {
+      const u = await rpc('cw_admin_users', { p_admin: adminPw }), fmt = d => d ? new Date(d).toLocaleString() : '—';
+      $('usersTable').innerHTML = '<tr><th>User</th><th>Progress</th><th>Current word</th><th>Crosswords</th><th>Last active</th><th></th></tr>' + (u.map(x => { const pct = x.total ? Math.round(x.done / x.total * 100) : 0; return `<tr><td><b>${esc(x.username)}</b></td><td><div class="bar"><i style="width:${pct}%"></i></div>${x.done}/${x.total} done (${pct}%)</td><td>${esc(x.current_word || '—')}</td><td>${x.cw_count}</td><td>${fmt(x.last_active)}</td><td><button class="mini" data-pw="${x.id}">Reset password</button> <button class="mini danger" data-ud="${x.id}">Delete</button></td></tr>` }).join('') || '<tr><td colspan="6" class="muted">No users yet.</td></tr>');
+      $('usersTable').querySelectorAll('[data-pw]').forEach(b => b.onclick = async () => { const p = prompt('New password:'); if (!p) return; try { await rpc('cw_admin_set_password', { p_admin: adminPw, p_user_id: b.dataset.pw, p_password: p }); toast('Password updated') } catch (e) { alert(e.message) } });
+      $('usersTable').querySelectorAll('[data-ud]').forEach(b => b.onclick = async () => { if (!confirm('Delete this user and their progress?')) return; await rpc('cw_admin_delete_user', { p_admin: adminPw, p_user_id: b.dataset.ud }); loadUsers() });
+    }
+
+    /* =================== LEARNER =================== */
+    let auth = null, W = [], current = 0, filtered = [], puzzle = null, timerId = null, timeLeft = 0, startedAt = 0, selectedClue = null, finished = false, saveLastT = null;
+    function initLearner() {
+      try { auth = JSON.parse(localStorage.getItem('cw_auth') || 'null') } catch { auth = null }
+      $('loginForm').onsubmit = async e => { e.preventDefault(); $('lgErr').textContent = ''; const u = $('lgUser').value.trim(), p = $('lgPass').value; try { const lr = await rpc('cw_login', { p_user: u, p_pass: p }); auth = { u: lr.username || u, p: lr.token || p }; localStorage.setItem('cw_auth', JSON.stringify(auth)); enterApp() } catch (err) { $('lgErr').textContent = err.message } };
+      $('logoutBtn').onclick = () => { localStorage.removeItem('cw_auth'); location.reload() };
+      if (auth) enterApp(); else $('loginScreen').hidden = false;
+    }
+    const A = () => ({ p_user: auth.u, p_pass: auth.p });
+    function applyState(s, keepCurrent) {
+      W = s.words.map(w => ({ ...w, answer: cleanAnswer(w.word), key: w.key_definition || shortDef(w.definition) }));
+      $('loginScreen').hidden = true; $('app').hidden = false;
+      if (!keepCurrent) { let i = W.findIndex(w => w.id === s.last_word_id); current = i >= 0 ? i : Math.max(0, W.findIndex(w => !w.is_done)); }
+      else if (current >= W.length) current = Math.max(0, W.length - 1);
+      render(); updateCwInfo();
+    }
+    async function enterApp() {
+      const ck = 'cw_cache_' + auth.u; let shown = false;
+      try { const c = JSON.parse(localStorage.getItem(ck) || 'null'); if (c && c.words) { applyState(c, false); shown = true } } catch { }
+      try {
+        const s = await rpc('cw_state', A());
+        try { localStorage.setItem(ck, JSON.stringify(s)) } catch { }
+        applyState(s, shown);
+      } catch (err) {
+        if (shown && /fetch|network|Failed/i.test(err.message)) { toast('Offline: showing saved words'); return }
+        localStorage.removeItem('cw_auth'); auth = null; $('app').hidden = true; $('loginScreen').hidden = false; $('lgErr').textContent = err.message
+      }
+    }
+    function cacheState() { try { localStorage.setItem('cw_cache_' + auth.u, JSON.stringify({ words: W.map(({ id, word, definition, key_definition, is_done, used_count }) => ({ id, word, definition, key_definition, is_done, used_count })), last_word_id: (W[current] || {}).id })) } catch { } }
+    function go(i) {
+      if (i < 0 || i >= W.length || i === current) return;
+      const list = $('wordList'), old = list.querySelector('.word-item.active'), nb = list.querySelector(`.word-item[data-i="${i}"]`);
+      current = i; old && old.classList.remove('active');
+      if (nb) { nb.classList.add('active'); nb.scrollIntoView({ block: 'nearest' }) }
+      showCard();
+    }
+    function render() {
+      const q = $('search').value.toLowerCase().trim();
+      filtered = W.map((w, i) => ({ ...w, index: i })).filter(w => w.word.toLowerCase().includes(q));
+      $('wordList').innerHTML = filtered.map(w => `<button class="word-item ${w.index === current ? 'active' : ''}" data-i="${w.index}">${String(w.index + 1).padStart(2, '0')} · ${esc(w.word)}${w.is_done ? '<span class="tick">✓</span>' : ''}</button>`).join('') || '<div class="muted" style="padding:10px">No matches</div>';
+      $('wordList').querySelectorAll('button').forEach(b => b.onclick = () => go(+b.dataset.i));
+      const done = W.filter(w => w.is_done).length; $('fileCount').textContent = `${W.length} WORDS · ${done} DONE`; $('setCount').textContent = `${done}/${W.length} done`;
+      showCard();
+    }
+    function markDoneUI() {
+      const w = W[current], b = $('wordList').querySelector('.word-item.active');
+      if (b) { b.querySelector('.tick')?.remove(); if (w.is_done) b.insertAdjacentHTML('beforeend', '<span class="tick">✓</span>') }
+      const done = W.filter(x => x.is_done).length; $('fileCount').textContent = `${W.length} WORDS · ${done} DONE`; $('setCount').textContent = `${done}/${W.length} done`;
+      $('doneBadge').textContent = w.is_done ? '✓ DONE' : ''; $('doneBtn').textContent = w.is_done ? 'Done ✓ (undo)' : 'Mark as done'; $('doneBtn').classList.toggle('on', w.is_done);
+      updateCwInfo();
+    }
+    function showCard() {
+      const w = W[current]; if (!w) { $('word').textContent = 'No words yet'; $('definition').textContent = 'Ask your lead to import words.'; $('keyDefinition').textContent = ''; $('doneBtn').style.display = 'none'; return }
+      $('doneBtn').style.display = ''; $('flipCard').classList.remove('flipped');
+      $('word').textContent = w.word; $('definition').textContent = w.definition; $('keyDefinition').textContent = w.key;
+      const n = String(current + 1).padStart(2, '0'); $('frontIndex').textContent = n; $('backWord').textContent = n + ' · ' + w.word;
+      $('doneBadge').textContent = w.is_done ? '✓ DONE' : '';
+      $('doneBtn').textContent = w.is_done ? 'Done ✓ (undo)' : 'Mark as done'; $('doneBtn').classList.toggle('on', w.is_done);
+      $('prev').disabled = current === 0; $('next').disabled = current === W.length - 1;
+      clearTimeout(saveLastT); saveLastT = setTimeout(() => { cacheState(); rpc('cw_set_last', { ...A(), p_word_id: w.id }).catch(() => { }) }, 900);
+    }
+    $('search').oninput = () => { if (auth) render() };
+    $('prev').onclick = () => go(current - 1);
+    $('next').onclick = () => go(current + 1);
+    $('flipCard').onclick = () => $('flipCard').classList.toggle('flipped');
+    $('flipCard').onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); $('flipCard').classList.toggle('flipped') } };
+    $('doneBtn').onclick = async () => { const w = W[current]; if (!w) return; const v = !w.is_done; w.is_done = v; markDoneUI(); cacheState(); try { await rpc('cw_set_done', { ...A(), p_word_id: w.id, p_done: v }) } catch (err) { w.is_done = !v; markDoneUI(); toast(err.message) } };
+
+    function switchView(name) {
+      const t = name === 'crossword' ? 'crosswordView' : 'studyView';
+      document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === t));
+      document.querySelectorAll('.navbtn[data-view]').forEach(b => b.classList.toggle('active', b.dataset.view === name));
+      $('app').classList.toggle('crossword-mode', name === 'crossword');
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      if (name === 'crossword') { updateCwInfo(); if (puzzle) requestAnimationFrame(fitSolverGrid) }
+    }
+    document.querySelectorAll('.navbtn[data-view]').forEach(b => b.addEventListener('click', () => switchView(b.dataset.view)));
+    function showQuestionDrawer(open) { const p = $('questionsPanel'); p.classList.toggle('drawer-open', open); document.body.classList.toggle('drawer-active', open); $('questionsTab').classList.toggle('active', open); $('puzzleTab').classList.toggle('active', !open) }
+    $('questionsTab').onclick = () => showQuestionDrawer(true); $('puzzleTab').onclick = () => showQuestionDrawer(false); $('closeQuestions').onclick = () => showQuestionDrawer(false);
+
+    /* =================== PROMPTS =================== */
+    const doneWords = () => W.filter(w => w.is_done && w.answer.length >= 3);
+    function updateCwInfo() {
+      const d = doneWords(), unused = d.filter(w => !w.used_count).length;
+      $('cwInfo').textContent = d.length ? `${d.length} done words available · ${unused} not used in a crossword yet` : 'You have no done words yet. Open Learn words and press "Mark as done" on at least 5 words.';
+
+    }
+    const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1));[a[i], a[j]] = [a[j], a[i]] } return a };
+    const wordLines = l => l.map(w => `${w.answer} | ${w.word} | ${w.definition}`).join('\n');
+    let cachedCwPrompt = null;
+    let cachedCwFollowupPrompt = null;
+        async function getCwPromptTemplate() {
+      if (cachedCwPrompt) return cachedCwPrompt;
+      try {
+        const res = await fetch('crossword_prompt.txt?' + Date.now());
+        if (res.ok) { cachedCwPrompt = await res.text(); return cachedCwPrompt; }
+      } catch (e) { }
+      return "Build a crossword puzzle in JSON format.";
+    }
+    async function getCwFollowupPromptTemplate() {
+      if (cachedCwFollowupPrompt) return cachedCwFollowupPrompt;
+      try {
+        const res = await fetch('crossword_followup_prompt.txt?' + Date.now());
+        if (res.ok) { cachedCwFollowupPrompt = await res.text(); return cachedCwFollowupPrompt; }
+      } catch (e) { }
+      return "Continue in this same conversation. Build the next crossword in JSON format.";
+    }
+    async function rules(n) {
+      const min = Math.min(n, 15), max = Math.min(n, 45);
+      const raw = await getCwPromptTemplate();
+      return raw.replace(/\{\{MIN_WORDS\}\}/g, min).replace(/\{\{MAX_WORDS\}\}/g, max);
+    }
+    async function fullPrompt() {
+      const d = shuffle(doneWords());
+      const r = await rules(d.length);
+      return `${r}\n\nSELECTION\nThese are all the words I have completed. Choose the words from this bank at random, starting fresh (this is a new crossword conversation, nothing has been used before). Format of each line: ANSWER | term | definition.\n\nWORD BANK (${d.length} words)\n${wordLines(d)}`;
+    }
+    async function followPrompt() {
+      const d = doneWords(), unused = shuffle(d.filter(w => !w.used_count)), used = d.filter(w => w.used_count);
+      const min = Math.min(d.length, 15), max = Math.min(d.length, 45);
+      const template = await getCwFollowupPromptTemplate();
+      let s = template.replace(/\{\{MIN_WORDS\}\}/g, min).replace(/\{\{MAX_WORDS\}\}/g, max);
+      s += `\n\nNEW / UNUSED WORDS (${unused.length}) - format: ANSWER | term | definition\n${unused.length ? wordLines(unused) : '(none left - reuse the least-used words below)'}\n\n`;
+      s += `ALREADY USED IN PREVIOUS CROSSWORDS (${used.length}) - answers only, definitions as in the earlier word bank (or here if you no longer have them):\n${used.length ? used.map(w => `${w.answer} | ${w.word} | ${w.definition}`).join('\n') : '(none)'}`;
+      return s;
+    }
+    async function copyText(t) { try { await navigator.clipboard.writeText(t) } catch (e) { const x = document.createElement('textarea'); x.value = t; document.body.appendChild(x); x.select(); document.execCommand('copy'); x.remove() } toast('Prompt copied') }
+    function openSpecModal(preferFull = false) {
+      $('specErr').textContent = ''; $('specText').value = '';
+      const hasUsed = W.some(w => w.used_count > 0);
+      const unusedCount = doneWords().filter(w => !w.used_count).length;
+      const note = $('specModal').querySelector('p.muted');
+      if (note) {
+        if (!hasUsed || preferFull) {
+          note.innerHTML = `Starting fresh? Copy <b>Full prompt</b> for a brand new ChatGPT chat. All <b>${doneWords().length}</b> completed words will be provided.`;
+          $('copyFollow').className = 'secondary';
+          $('copyFull').className = 'primary';
+        } else {
+          note.innerHTML = `Continuing in the <b>same ChatGPT conversation</b>? Click <b>Copy follow-up prompt</b>: it tells ChatGPT to prioritize your <b>${unusedCount}</b> unused words and avoid previous crossword words.`;
+          $('copyFollow').className = 'primary';
+          $('copyFull').className = 'secondary';
+        }
+      }
+      $('specModal').classList.add('open');
+    }
+    const MIN_DONE = 5;
+    function needMore() { const n = doneWords().length; if (n < MIN_DONE) { toast(`Mark at least ${MIN_DONE} words as done first (you have ${n}).`); return true } return false }
+    $('startPuzzle').onclick = () => { if (needMore()) return; openSpecModal(false) };
+    $('scratchBtn').onclick = async () => { if (needMore()) return; try { await rpc('cw_reset_used', A()); W.forEach(w => w.used_count = 0); updateCwInfo(); openSpecModal(true) } catch (err) { toast(err.message) } };
+    $('copyFull').onclick = async () => copyText(await fullPrompt());
+    $('copyFollow').onclick = async () => copyText(await followPrompt());
+    $('specCancel').onclick = () => $('specModal').classList.remove('open');
+    $('specFileBtn').onclick = () => $('specFile').click();
+    $('specFile').onchange = async e => { const f = e.target.files[0]; if (f) $('specText').value = await f.text(); e.target.value = '' };
+
+    /* =================== BUILD PUZZLE FROM JSON =================== */
+    function layoutFixed(spec) {
+      const list = Array.isArray(spec) ? spec : (spec.entries || spec.words);
+      if (!Array.isArray(list) || list.length < 2) throw Error('JSON needs an "entries" array with at least 2 items.');
+      const L = list.map((x, i) => {
+        const answer = cleanAnswer(x.answer || x.word); if (answer.length < 2) throw Error('Entry ' + (i + 1) + ' has no valid answer.');
+        const d = String(x.dir || x.direction || '').toUpperCase()[0], r = +(x.row ?? x.r), c = +(x.col ?? x.c);
+        if (d !== 'A' && d !== 'D') throw Error(answer + ': "dir" must be "A" or "D".'); if (isNaN(r) || isNaN(c) || r < 0 || c < 0) throw Error(answer + ': needs valid "row" and "col".');
+        return { answer, definition: String(x.clue || x.question || 'No clue supplied.').trim(), dir: d, r, c }
+      });
+      const bank = new Set(W.filter(w => w.is_done).map(w => w.answer)), dup = new Set();
+      for (const e of L) { if (dup.has(e.answer)) throw Error('Answer used twice: ' + e.answer); dup.add(e.answer); if (!bank.has(e.answer)) throw Error(e.answer + ' is not one of your done words.') }
+      let minR = 1e9, minC = 1e9, maxR = -1, maxC = -1;
+      for (const e of L) { minR = Math.min(minR, e.r); minC = Math.min(minC, e.c); maxR = Math.max(maxR, e.r + (e.dir === 'D' ? e.answer.length - 1 : 0)); maxC = Math.max(maxC, e.c + (e.dir === 'A' ? e.answer.length - 1 : 0)) }
+      const rows = maxR - minR + 1, cols = maxC - minC + 1, grid = Array.from({ length: rows }, () => Array(cols).fill(null)), entries = [];
+      for (const e of L) { const p = { ...e, r: e.r - minR, c: e.c - minC }; for (let i = 0; i < p.answer.length; i++) { const rr = p.r + (p.dir === 'D' ? i : 0), cc = p.c + (p.dir === 'A' ? i : 0); if (grid[rr][cc] && grid[rr][cc] !== p.answer[i]) throw Error('Letter clash at row ' + (rr + 1) + ', col ' + (cc + 1) + ' (' + p.answer + ' vs ' + grid[rr][cc] + ').'); grid[rr][cc] = p.answer[i] } entries.push(p) }
+      const key = new Set(entries.map(e => e.dir + e.r + ',' + e.c + ',' + e.answer.length));
+      for (let r = 0; r < rows; r++)for (let c = 0; c < cols; c++) {
+        if (!grid[r][c]) continue;
+        if ((c === 0 || !grid[r][c - 1]) && c + 1 < cols && grid[r][c + 1]) { let l = 0; while (c + l < cols && grid[r][c + l]) l++; if (!key.has('A' + r + ',' + c + ',' + l)) throw Error('Touching letters at row ' + (r + 1) + ', col ' + (c + 1) + ' do not form a listed Across answer.') }
+        if ((r === 0 || !grid[r - 1][c]) && r + 1 < rows && grid[r + 1][c]) { let l = 0; while (r + l < rows && grid[r + l][c]) l++; if (!key.has('D' + r + ',' + c + ',' + l)) throw Error('Touching letters at row ' + (r + 1) + ', col ' + (c + 1) + ' do not form a listed Down answer.') }
+      }
+      // connectivity
+      const seen = new Set(), st = [[entries[0].r, entries[0].c]]; while (st.length) { const [r, c] = st.pop(), k = r + ',' + c; if (seen.has(k) || !grid[r] || !grid[r][c]) continue; seen.add(k); st.push([r + 1, c], [r - 1, c], [r, c + 1], [r, c - 1]) }
+      if (seen.size !== grid.flat().filter(Boolean).length) throw Error('The grid is not one connected shape. Ask ChatGPT to connect all words.');
+      let num = 0, across = [], down = [];
+      for (let r = 0; r < rows; r++)for (let c = 0; c < cols; c++) { if (!grid[r][c]) continue; const a = entries.find(x => x.dir === 'A' && x.r === r && x.c === c), d = entries.find(x => x.dir === 'D' && x.r === r && x.c === c); if (a || d) { num++; if (a) across.push({ ...a, num }); if (d) down.push({ ...d, num }) } }
+      return { grid, across, down, entries, rows, cols };
+    }
+    function extractJson(raw) {
+      let s = raw.trim();
+      const codeMatch = s.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
+      if (codeMatch) s = codeMatch[1].trim();
+      if (!s.startsWith('{') && !s.startsWith('[')) {
+        const firstBrace = s.indexOf('{');
+        const lastBrace = s.lastIndexOf('}');
+        if (firstBrace !== -1 && lastBrace > firstBrace) {
+          s = s.substring(firstBrace, lastBrace + 1);
+        }
+      }
+      return JSON.parse(s);
+    }
+    $('specBuild').onclick = () => {
+      try {
+        const parsed = extractJson($('specText').value);
+        const g = layoutFixed(parsed); $('specModal').classList.remove('open'); launchPuzzle(g);
+        const ans = g.entries.map(e => e.answer); W.forEach(w => { if (ans.includes(w.answer)) w.used_count = (w.used_count || 0) + 1 }); updateCwInfo();
+        rpc('cw_mark_used', { ...A(), p_answers: ans }).catch(() => { });
+      } catch (err) { $('specErr').textContent = err.message }
+    };
+    function launchPuzzle(g) {
+      clearInterval(timerId); puzzle = g; finished = false; selectedClue = null; timeLeft = Math.round(+$('minutes').value * 60); startedAt = Date.now();
+      $('app').classList.add('solving-crossword');
+      $('setup').style.display = 'none'; $('puzzle').style.display = 'flex'; $('results').style.display = 'none';
+      $('puzzleMeta').textContent = `${g.entries.length} words · ${g.rows} × ${g.cols} grid`;
+      drawPuzzle(); updateTimer(); timerId = setInterval(() => { timeLeft--; updateTimer(); if (timeLeft <= 0) finishGame(true) }, 1000);
+    }
+
+    /* =================== GRID =================== */
+    let curDir = 'A';
+    function drawPuzzle() {
+      const g = $('crossGrid'); g.style.gridTemplateColumns = `repeat(${puzzle.cols},var(--solver-cell,30px))`; g.innerHTML = '';
+      const numMap = {};[...puzzle.across, ...puzzle.down].forEach(e => numMap[`${e.r},${e.c}`] = e.num);
+      for (let r = 0; r < puzzle.rows; r++)for (let c = 0; c < puzzle.cols; c++) {
+        const ch = puzzle.grid[r][c], cell = document.createElement('div'); cell.className = 'cell' + (ch ? '' : ' black');
+        if (ch) {
+          if (numMap[`${r},${c}`]) { const n = document.createElement('span'); n.className = 'num'; n.textContent = numMap[`${r},${c}`]; cell.appendChild(n) }
+          const inp = document.createElement('input'); inp.maxLength = 1; inp.autocomplete = 'off'; inp.dataset.r = r; inp.dataset.c = c; inp.setAttribute('aria-label', `Row ${r + 1} column ${c + 1}`);
+          inp.oninput = () => { inp.value = inp.value.toUpperCase().replace(/[^A-Z]/g, '').slice(-1); if (inp.value) moveNext(r, c) };
+          inp.onkeydown = e => { if (e.key === 'Backspace' && !inp.value) movePrev(r, c); if (e.key === 'ArrowRight') { curDir = 'A'; focusCell(r, c + 1) } if (e.key === 'ArrowLeft') { curDir = 'A'; focusCell(r, c - 1) } if (e.key === 'ArrowDown') { curDir = 'D'; focusCell(r + 1, c) } if (e.key === 'ArrowUp') { curDir = 'D'; focusCell(r - 1, c) } };
+          cell.appendChild(inp)
+        }
+        g.appendChild(cell)
+      }
+      renderClues('across', puzzle.across); renderClues('down', puzzle.down); requestAnimationFrame(fitSolverGrid);
+    }
+    function fitSolverGrid() {
+      if (!puzzle) return; const host = $('gridPanel'), grid = $('crossGrid'); if (!host || !$('crosswordView').classList.contains('active')) return;
+      const w = host.clientWidth - 12, h = host.clientHeight - 12, gap = 1, cell = Math.max(8, Math.min(34, (w - gap * (puzzle.cols - 1) - 6) / puzzle.cols, (h - gap * (puzzle.rows - 1) - 6) / puzzle.rows));
+      grid.style.setProperty('--solver-cell', cell + 'px'); grid.style.gridTemplateColumns = `repeat(${puzzle.cols},${cell}px)`;
+    }
+    function renderClues(dir, list) {
+      $(dir + 'Clues').innerHTML = list.sort((a, b) => a.num - b.num).map(e => `<div class="clue" data-dir="${dir}" data-num="${e.num}"><strong>${e.num}.</strong><span>${esc(e.definition)} <span style="color:#999">(${e.answer.length})</span></span></div>`).join('');
+      $(dir + 'Clues').querySelectorAll('.clue').forEach(el => el.onclick = () => { selectedClue = list.find(x => x.num === +el.dataset.num); curDir = dir === 'across' ? 'A' : 'D'; document.querySelectorAll('.clue').forEach(x => x.classList.remove('selected')); el.classList.add('selected'); cellAt(selectedClue.r, selectedClue.c)?.focus() });
+    }
+    function cellAt(r, c) { return document.querySelector(`.cell input[data-r="${r}"][data-c="${c}"]`) }
+    function focusCell(r, c) { cellAt(r, c)?.focus() }
+    function setDirFor(r, c) { const h = cellAt(r, c - 1) || cellAt(r, c + 1), v = cellAt(r - 1, c) || cellAt(r + 1, c); if (curDir === 'A' && !h && v) curDir = 'D'; else if (curDir === 'D' && !v && h) curDir = 'A' }
+    function moveNext(r, c) { setDirFor(r, c); (curDir === 'A' ? cellAt(r, c + 1) : cellAt(r + 1, c))?.focus() }
+    function movePrev(r, c) { setDirFor(r, c); const p = curDir === 'A' ? cellAt(r, c - 1) : cellAt(r - 1, c); if (p) { p.focus(); p.value = '' } }
+    document.addEventListener('click', e => { const i = e.target.closest && e.target.closest('.cell input'); if (i && i.dataset.last === i.dataset.r + ',' + i.dataset.c) curDir = curDir === 'A' ? 'D' : 'A'; document.querySelectorAll('.cell input').forEach(x => delete x.dataset.last); if (i) i.dataset.last = i.dataset.r + ',' + i.dataset.c });
+    function updateTimer() { const m = Math.floor(timeLeft / 60), s = timeLeft % 60; $('timer').textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`; $('timer').classList.toggle('warning', timeLeft <= 30) }
+    function finishGame(timeUp = false) {
+      if (finished) return; finished = true; clearInterval(timerId);
+      $('app').classList.remove('solving-crossword');
+      let wordCorrect = 0, wordAttempted = 0, totalWords = puzzle.entries.length;
+      let totalLetters = 0, lettersCorrect = 0, lettersWrong = 0, lettersUnattempted = 0;
+
+      // Word-level evaluation
+      for (const e of puzzle.entries) {
+        let enteredWord = '';
+        let hasAnyInput = false;
+        for (let i = 0; i < e.answer.length; i++) {
+          const r = e.r + (e.dir === 'D' ? i : 0), c = e.c + (e.dir === 'A' ? i : 0);
+          const val = (cellAt(r, c)?.value || '').toUpperCase();
+          enteredWord += val;
+          if (val) hasAnyInput = true;
+        }
+        if (hasAnyInput) wordAttempted++;
+        if (enteredWord === e.answer) wordCorrect++;
+      }
+
+      // Cell-level evaluation & color feedback (Green = Correct, Red = Wrong, Grey = Not attempted)
+      for (let r = 0; r < puzzle.rows; r++) {
+        for (let c = 0; c < puzzle.cols; c++) {
+          const expected = puzzle.grid[r][c];
+          if (!expected) continue;
+          totalLetters++;
+          const inp = cellAt(r, c);
+          if (!inp) continue;
+          inp.disabled = true;
+          const userVal = (inp.value || '').trim().toUpperCase();
+
+          if (!userVal) {
+            // Unattempted: show correct answer in grey
+            lettersUnattempted++;
+            inp.value = expected;
+            inp.classList.add('unattempted');
+            inp.title = 'Not attempted';
+          } else if (userVal === expected) {
+            // Correct: green
+            lettersCorrect++;
+            inp.classList.add('correct');
+            inp.title = 'Correct';
+          } else {
+            // Wrong: red (keep what user typed)
+            lettersWrong++;
+            inp.classList.add('wrong');
+            inp.title = `Wrong (Correct letter: ${expected})`;
+          }
+        }
+      }
+
+      const el = Math.max(1, Math.floor((Date.now() - startedAt) / 1000));
+      const mins = Math.floor(el / 60), secs = el % 60;
+      const wordPct = Math.round((wordCorrect / totalWords) * 100);
+      const letterAccuracy = totalLetters ? Math.round((lettersCorrect / totalLetters) * 100) : 0;
+
+      $('resultTitle').textContent = timeUp ? '⏰ Time is up!' : '🎉 Crossword Completed!';
+      $('score').innerHTML = `${wordPct}% <span style="font-size:16px;font-weight:600;color:var(--muted)">word score</span>`;
+
+      $('resultStats').innerHTML = `
+        <span><b>${wordCorrect} / ${totalWords}</b> words correct (${wordAttempted} attempted)</span>
+        <span><b>${lettersCorrect} / ${totalLetters}</b> letters correct (${letterAccuracy}%)</span>
+        <span><b style="color:#bfe69a">✓ ${lettersCorrect}</b> correct &nbsp; <b style="color:#f2b2a5">✗ ${lettersWrong}</b> wrong &nbsp; <b style="color:#a0a397">― ${lettersUnattempted}</b> missed</span>
+        <span><b>${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}</b> time taken</span>
+      `;
+      // Populate the correct words breakdown box
+      const allEntries = [
+        ...puzzle.across.map(e => ({ ...e, dirName: 'Across' })),
+        ...puzzle.down.map(e => ({ ...e, dirName: 'Down' }))
+      ].sort((a, b) => a.num - b.num);
+
+      const listHtml = allEntries.map(e => {
+        let entered = '';
+        for (let i = 0; i < e.answer.length; i++) {
+          const r = e.r + (e.dir === 'D' ? i : 0), c = e.c + (e.dir === 'A' ? i : 0);
+          entered += (cellAt(r, c)?.value || '').toUpperCase();
+        }
+        const isOk = entered === e.answer;
+        const matchingWordObj = W.find(w => w.answer === e.answer);
+        const displayWord = matchingWordObj ? matchingWordObj.word : e.answer;
+
+        return `
+          <div class="sol-word-item ${isOk ? 'was-correct' : ''}">
+            <span class="sol-word-tag">${e.num} ${e.dir === 'A' ? 'A' : 'D'}</span>
+            <div>
+              <span class="sol-word-name">${esc(displayWord)}</span>
+              <span class="sol-word-status ${isOk ? 'ok' : 'missed'}">${isOk ? '✓ Correct' : 'Missed'}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      $('correctWordsList').innerHTML = listHtml || '<div class="muted">No words available</div>';
+
+      $('results').style.display = 'block';
+      $('results').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+    window.addEventListener('resize', () => requestAnimationFrame(fitSolverGrid));
+    const backToSetup = () => {
+      clearInterval(timerId);
+      $('app').classList.remove('solving-crossword');
+      $('puzzle').style.display = 'none';
+      $('results').style.display = 'none';
+      $('setup').style.display = 'block';
+      updateCwInfo();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      $('crosswordView').scrollTo({ top: 0, behavior: 'smooth' });
+    };
+    $('submitPuzzle').onclick = () => finishGame(false);
+    $('tryAgain').onclick = backToSetup;
+    $('goToLearn').onclick = () => { backToSetup(); switchView('study'); };
+
+    if (isAdminRoute) initAdmin(); else initLearner();
+  </script>
+</body>
+
+</html>

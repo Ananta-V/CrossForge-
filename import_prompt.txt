@@ -1,0 +1,614 @@
+# BUSINESS CROSSWORD VOCABULARY GENERATOR — MASTER PROMPT
+
+You are a professional business-studies researcher, vocabulary curator and crossword-content creator for a business learning application.
+
+Your task is to generate EXACTLY 50 NEW business terminology entries for a crossword learning app.
+
+Every entry must contain:
+1. A business vocabulary term.
+2. A formal textbook-style definition suitable as a crossword clue.
+3. A completely different beginner-friendly explanation for a flashcard.
+4. A subject category.
+5. An accurate letter count.
+
+**CRITICAL REQUIREMENT:** The formal definition and the beginner-friendly definition MUST be different in vocabulary, sentence structure and teaching purpose. Never produce two versions of the same sentence.
+
+The final response must be displayed inside ONE standard Markdown JSON code block with a Copy button.
+
+Do not return ordinary unformatted JSON text.
+
+Do not include any commentary outside the code block.
+
+Start immediately.
+
+---
+
+# 1. GOAL
+
+My learners have already completed previous business crossword worksheets. Their vocabulary is listed in the ALREADY COVERED section below.
+
+I want DIFFERENT, important business words and terminology.
+
+Use the previously covered terms only as a reference for:
+- Difficulty level.
+- Wording style.
+- Topic range.
+- Educational relevance.
+
+Research what business studies courses and business crossword puzzles commonly test.
+
+Use relevant knowledge from:
+- GCSE, IGCSE, A-level, CBSE, ICSE and IB business syllabi.
+- Introductory college business and management textbooks.
+- Common business glossaries.
+- Business and management terminology references.
+- Printed business crossword puzzles.
+- Contemporary business practices and professional terminology.
+
+Choose 50 terms that are important and likely to appear in business examinations, interviews, introductory management courses and business vocabulary exercises.
+
+# 2. WHICH 50 TERMS TO SELECT
+
+Generate exactly 50 terms.
+
+Spread them across multiple business subjects. Aim for approximately 4–6 terms from several different subject areas, but do not force equal distribution.
+
+Traditional business subjects:
+
+**Marketing and sales**
+Market research, segmentation, branding, pricing, advertising, product lifecycle, sales forecasting, customer acquisition and marketing strategies.
+
+**Finance and accounting**
+Profitability, depreciation, interest, taxation, auditing, financial ratios, solvency, assets valuation and financial management.
+
+**Operations and production**
+Quality control, lean production, supply chain, productivity, logistics, procurement, warehousing and process improvement.
+
+**Human resources and management**
+Recruitment, appraisal, leadership, training, workforce planning, organizational culture, teamwork and employee relations.
+
+**Strategy and growth**
+Diversification, takeover, strategic planning, mission, vision, business restructuring and market penetration.
+
+**Entrepreneurship and business start-up**
+Venture capital, crowdfunding, business angel, seed funding, business incubation and startup development.
+
+**Economics for business**
+Interest rates, exchange rates, monetary policy, fiscal policy, economic growth, purchasing power and price elasticity.
+
+**Law, ethics and governance**
+Copyright, patent, insolvency, regulatory compliance, corporate governance, business ethics and intellectual property.
+
+**Technology and international trade**
+Automation, imports, exports, globalisation, digital transformation, e-business and international markets.
+
+# 3. ADDITIONAL BUSINESS AREAS
+
+Also include important terms from these areas. Rotate the areas across batches to build a broad vocabulary database.
+
+1. **Business Law:** Legal rights, regulations, lawsuits, compliance, insolvency and intellectual property.
+2. **Corporate Governance:** Accountability, transparency, internal controls and board oversight.
+3. **Business Ethics:** Ethical decisions, fair trade and responsible business practices.
+4. **Strategic Management:** Long-term planning, mission, vision, implementation and organizational change.
+5. **Project Management:** Project scope, timelines, milestones, resources and delivery.
+6. **Business Communication:** Negotiation, presentations, reports, correspondence and professional communication.
+7. **Banking and Financial Markets:** Banking, securities, bonds, financial instruments and financial institutions.
+8. **Taxation:** Direct tax, indirect tax, GST, tax compliance and tax systems.
+9. **Insurance and Risk Management:** Premiums, claims, coverage, insurance policies and risk mitigation.
+10. **International Business:** Foreign exchange, trade barriers, balance of payments and international markets.
+11. **Digital Business and Technology:** SaaS, cloud computing, digital platforms, automation and digital transformation.
+12. **Business Analytics:** KPIs, dashboards, forecasting, data analysis and performance measurement.
+13. **Innovation and Intellectual Property:** Patents, licensing, copyright, research and development.
+14. **Retail and Supply Chain:** Warehousing, procurement, fulfilment, transportation and stock management.
+15. **Start-up Ecosystem:** Incubators, accelerators, pitch decks, seed funding and venture creation.
+16. **Sustainability and ESG:** Carbon footprint, green business, environmental responsibility and social impact.
+17. **Leadership and Organizational Behaviour:** Organizational culture, conflict, teamwork, leadership and organizational change.
+18. **Indian Business Environment:** MSME, UPI, SEBI, RBI, GST, Startup India, Make in India and Indian business regulations.
+
+Do not focus only on traditional textbook topics. Include contemporary business vocabulary where appropriate.
+
+# 4. CROSSWORD WORD SELECTION RULES
+
+Every selected term must follow these rules:
+
+- Exactly 50 unique terms.
+- A single word or a short 2–3 word term.
+- Prefer 4–15 letters when spaces are removed.
+- Never exceed 18 letters.
+- Include short terms (4–6 letters), medium terms (7–10 letters) and longer terms (11–15 letters).
+- Beginner to intermediate difficulty.
+- Business-related and educationally relevant.
+- Accurate and unambiguous.
+- One clear meaning for each term.
+- Avoid obscure or excessively technical terminology.
+- Avoid acronyms unless they are genuinely standard business vocabulary.
+- Maximum 3 acronyms in the entire batch.
+- Avoid unnecessary abbreviations.
+- Do not repeat previously covered words.
+- Do not include singular/plural variations of covered words.
+- Do not include spelling variations of covered words.
+- Do not include near-identical terms within the same batch.
+- Do not always select the same famous vocabulary.
+- Vary the length, subject area and vocabulary selection in every batch.
+- Rotate selections to help build a large vocabulary database over time.
+
+# 5. THE FIVE REQUIRED JSON FIELDS
+
+Each entry MUST contain exactly these five keys:
+
+1. word
+2. definition
+3. key_definition
+4. source
+5. letter_count
+
+Do not add any additional keys.
+
+---
+
+# 6. FIELD 1 — WORD
+
+The vocabulary term itself.
+
+Requirements:
+- Use normal readable English.
+- Use standard capitalization.
+- Use the term only.
+- No numbering.
+- No brackets.
+- No explanation.
+- No definition inside the word field.
+- Use a readable form for multiword terminology.
+
+Examples of formatting:
+- Market research
+- Business incubation
+- Price elasticity
+- Quality control
+
+---
+
+# 7. FIELD 2 — DEFINITION (FORMAL TEXTBOOK DEFINITION)
+
+**PURPOSE: This is the formal explanation of the business concept and must work as a crossword clue.**
+
+Write a professional dictionary-style definition.
+
+Requirements:
+
+- Between 12 and 30 words.
+- One complete sentence.
+- Capitalized first letter.
+- Must end with a full stop.
+- Use accurate business and educational terminology.
+- Explain the technical meaning of the concept.
+- Explain what the concept does, represents or how it works.
+- Use professional textbook-style language.
+- Make the meaning clear without revealing the answer.
+- Do not include examples in brackets.
+- Do not invent statistics.
+- Do not include the actual vocabulary term.
+- Do not include an obvious variation or stem of the vocabulary term.
+- Do not use the same wording as the key_definition.
+
+Recommended sentence styles:
+
+- "A process through which..."
+- "The method of..."
+- "A financial arrangement that..."
+- "The amount of..."
+- "A legal requirement that..."
+- "The procedure used by..."
+- "An economic measure that..."
+- "A system designed to..."
+
+The definition must be sufficiently descriptive to help someone identify the correct crossword answer.
+
+---
+
+# 8. FIELD 3 — KEY_DEFINITION (SIMPLE MEMORY EXPLANATION)
+
+**PURPOSE: This is a separate teaching explanation for the flashcard. It must make the concept easy for a complete beginner to understand and remember.**
+
+This field is NOT a shorter version of the formal definition.
+
+It must use a different teaching style.
+
+Requirements:
+
+- Ideally 4–10 words.
+- Never exceed 12 words.
+- Use everyday English.
+- Use simple, familiar vocabulary.
+- Explain the concept as though teaching someone who has never studied business.
+- Focus on the main idea rather than technical details.
+- Make it easy to remember.
+- Use natural, conversational phrasing.
+- Avoid technical business jargon wherever possible.
+- Do not repeat the formal definition using fewer words.
+- Do not copy distinctive phrases from the formal definition.
+- Do not simply rearrange or shorten the formal definition.
+- Do not include the actual vocabulary term.
+- Do not include an obvious variation of the term.
+
+Think of this field as an easy memory shortcut.
+
+A learner should understand the concept immediately after reading it.
+
+## IMPORTANT: DIFFERENCE BETWEEN BOTH DEFINITIONS
+
+The formal definition teaches the textbook meaning.
+
+The key_definition teaches the same concept using simple everyday language.
+
+They must communicate the same core concept but use noticeably different wording and sentence structures.
+
+## REQUIRED EXAMPLES
+
+The following examples demonstrate the expected difference.
+
+**Example 1: Depreciation**
+
+Formal definition:
+
+"The gradual reduction in the recorded value of a fixed asset over its useful working life."
+
+Key definition:
+
+"An asset losing value as it gets older."
+
+Why this works:
+- The formal version explains the accounting concept.
+- The simple version gives the learner an everyday mental picture.
+
+**Example 2: Target market**
+
+Formal definition:
+
+"A specific group of potential buyers selected by a business for its marketing activities."
+
+Key definition:
+
+"The people a company wants to attract."
+
+Why this works:
+- The formal version explains the business terminology.
+- The simple version describes it in familiar language.
+
+**Example 3: Recruitment**
+
+Formal definition:
+
+"The process of identifying, attracting and selecting suitable candidates to fill vacant positions within an organization."
+
+Key definition:
+
+"Finding the right people for a job."
+
+Why this works:
+- The formal version describes the complete organizational process.
+- The simple version provides an easy-to-remember explanation.
+
+**Example 4: Cash reserve**
+
+Formal definition:
+
+"Money retained by an organization to meet unexpected expenses or temporary financial requirements."
+
+Key definition:
+
+"Emergency money kept for difficult times."
+
+Why this works:
+- The formal version explains the financial purpose.
+- The simple version creates a memorable real-world connection.
+
+**Example 5: Market segmentation**
+
+Formal definition:
+
+"The division of a broad customer population into smaller groups sharing similar characteristics, needs or purchasing behaviour."
+
+Key definition:
+
+"Splitting customers into groups with similar interests."
+
+Why this works:
+- The formal version explains the marketing process.
+- The simple version makes the idea immediately understandable.
+
+## STRICT REPETITION TEST
+
+Before accepting any entry, compare its two definitions.
+
+Reject and rewrite it if:
+
+1. Both definitions sound almost identical.
+2. The key_definition merely removes words from the formal definition.
+3. Both definitions use the same sentence structure.
+4. The key_definition sounds like a textbook explanation.
+5. The key_definition does not provide a simpler mental picture.
+6. The two fields use substantially identical phrases.
+7. The key_definition does not make sense independently.
+
+Every term must have two genuinely different explanations.
+
+Do not sacrifice accuracy to make the wording different.
+
+---
+
+# 9. FIELD 4 — SOURCE
+
+This field identifies the business subject area.
+
+Choose ONE appropriate category.
+
+Allowed category examples:
+
+- Marketing
+- Finance
+- Operations
+- HR
+- Strategy
+- Entrepreneurship
+- Economics
+- Law and ethics
+- International trade
+- Project Management
+- Business Communication
+- Banking
+- Taxation
+- Insurance
+- Business Analytics
+- Digital Business
+- Sustainability
+- Indian Business Environment
+
+Use a consistent, readable category name.
+
+Do not create unnecessary new categories.
+
+---
+
+# 10. FIELD 5 — LETTER_COUNT
+
+This field contains the number of letters in the vocabulary term.
+
+Rules:
+
+- Count alphabetic letters only.
+- Ignore spaces.
+- Ignore hyphens.
+- Ignore punctuation.
+- Ignore other separators.
+- Use an integer, not a string.
+- Verify the count for every term.
+
+Examples:
+
+- Target market = 12
+- Market research = 14
+- Break even point = 14
+- Quality control = 14
+
+The letter count must match the actual word.
+
+---
+
+# 11. VARIETY AND CONTENT QUALITY
+
+Do not generate a predictable list containing only famous business terms.
+
+Each new batch should introduce different terminology.
+
+Selection priorities:
+
+1. Educational importance.
+2. Relevance to real-world business.
+3. Usefulness in examinations.
+4. Crossword suitability.
+5. Beginner-to-intermediate accessibility.
+6. Subject diversity.
+7. Vocabulary not previously used.
+
+Balance traditional business concepts with contemporary topics such as analytics, digital business, banking, sustainability, business law and project management.
+
+Avoid unnecessary overlap between concepts.
+
+Do not generate several terms that communicate almost the same meaning.
+
+The final collection should feel like a carefully curated business vocabulary worksheet.
+
+---
+
+# 12. FOCUS TOPIC
+
+The admin may enter a topic here.
+
+If the value is "none", generate a broad mix of business vocabulary from all relevant subject areas.
+
+FOCUS TOPIC: none
+
+When a topic is supplied, prioritize it while maintaining a reasonable degree of vocabulary variety.
+
+---
+
+# 13. ALREADY COVERED — STATIC EXCLUSION LIST
+
+NEVER generate any of the following terms.
+
+The app already contains them:
+
+Customer service, Loan, Budget, Financial statement, Debt, Lien, Risk assessment, Grant, Contract, Human resources, Investment, Manufacturing, Board of directors, Capital, Stock, Assets, Bonus, Stock price, Entrepreneur, Accounting, Merchandising, Margin, Operations management, Franchisee, Franchisor, Franchise, Sole proprietorship, Partnership, Shareholder, Share, Dividend, Merger, Acquisition, Joint venture, Strategic alliance, Limited liability, Unlimited liability, Equity, Creditworthiness, Collateral, Outsourcing, Offshoring, Multinational corporation, Domestic business, E-commerce, Working capital, Service, Private limited company, Public limited company, Business plan, Cooperative, Corporation, Retained earnings, Franchising, Sole trader, Stakeholder, Unemployment, Prospectus, Charter, Creditor, Debtor, Dividend, Inflation, Recession, Consumer, Goods, Needs, Wants, Natural resources, Human capital, Capital resources, Market economy, Command economy, Mixed economy, Traditional economy, Supply, Demand, Equilibrium, Complements, Substitutes, Price skimming, Penetration pricing, Psychological pricing, Odd-even pricing, Bundle pricing, Multiple-unit pricing, Discount, Promotion, Break even, Revenue stream, Logo, Portfolio, Reflection, Intangible, Pop-up stores, Distribution, Delegation, Redundancy, Dismissal, Economies of scale, Infrastructure, Tariff, GDP, Trade deficit, Private sector, Inventory, Cash flow, Income statement, Balance sheet, Opportunity cost, Product, Brand, Marketing mix, Marketing budget, Marketing objective, Quota, Trading bloc, Span of control, Hierarchy, Liquidity, Pressure group, Trade union, Conglomerate merger, Horizontal merger, Franchisee, Externalities, Production, Capital intensive, Factors of production, Price, Place, Promotion, Differentiation, USP, Feedback, Motivation, SWOT analysis, PESTLE analysis, Core competencies, Competitive advantage, Limited partnership, General partnership, Limited liability company, Silent partner, Partnership agreement, Business cycle, Depression, Inflation, Luxury, Necessity, Durable good, Nondurable good, Shortage, Surplus, Market, Seller, Buyer.
+
+## EXCLUSION RULES
+
+Do not repeat:
+- Exact terms from the list.
+- Plural or singular versions.
+- Common spelling variations.
+- Hyphenated or unhyphenated variations.
+- Obvious renamed versions of the same concept.
+- Terms that are essentially identical in meaning.
+
+For example, changing a covered term from singular to plural does not make it a new vocabulary entry.
+
+---
+
+# 14. DYNAMIC ALREADY IMPORTED WORDS
+
+The application automatically replaces the following placeholder line when the Copy Prompt button is used:
+
+[ALREADY IMPORTED BY THE APP - the Copy prompt button replaces this line with the words currently in the database]
+
+Treat every term supplied in this section as already covered.
+
+The dynamic imported words and the static exclusion list must BOTH be checked.
+
+If a term appears in either list, do not generate it.
+
+The dynamic list takes priority even when it contains terms not included in the static list.
+
+Never ignore this placeholder.
+
+---
+
+# 15. FINAL SELF-VALIDATION
+
+Before producing the response, internally verify every entry.
+
+## A. Quantity checks
+
+1. Exactly 50 entries.
+2. No missing entries.
+3. No extra entries.
+
+## B. Vocabulary checks
+
+4. No terms from the static exclusion list.
+5. No terms from the dynamic imported list.
+6. No duplicate terms.
+7. No spelling variations of covered terms.
+8. No singular/plural variations.
+9. No near-identical terms.
+10. Suitable business terminology.
+
+## C. Crossword checks
+
+11. Each term has 4–18 letters.
+12. Preferably most terms have 4–15 letters.
+13. Letter count is accurate.
+14. Multiword terms are readable.
+15. Terms are suitable for beginner-to-intermediate crossword puzzles.
+
+## D. Formal definition checks
+
+16. Between 12 and 30 words.
+17. One complete sentence.
+18. Ends with a full stop.
+19. Accurate business meaning.
+20. Does not reveal the answer by repeating the term.
+21. Suitable as a crossword clue.
+
+## E. Key definition checks
+
+22. Ideally 4–10 words.
+23. Never more than 12 words.
+24. Simple everyday language.
+25. Easy to remember.
+26. Understandable to a beginner.
+27. Does not contain the vocabulary term.
+28. Does not copy the formal definition.
+29. Does not simply shorten the formal definition.
+30. Communicates the same core concept using genuinely different wording.
+
+## F. JSON checks
+
+31. Exactly five keys per entry.
+32. Correct key names.
+33. Double quotation marks.
+34. Correct commas.
+35. No trailing commas.
+36. No comments.
+37. Numeric letter_count values.
+38. Valid JSON structure.
+39. No missing values.
+40. No additional fields inside entries (the only extra key allowed is the single top-level set_id, formatted SET- plus 4 random capital letters/digits).
+
+If any validation fails, correct the affected entries before returning the final result.
+
+---
+
+# 16. MANDATORY OUTPUT FORMAT — CRITICAL
+
+The final response MUST contain ONE standard Markdown fenced JSON code block.
+
+The purpose is to make the JSON appear in a dedicated code box with a Copy button.
+
+**Follow these exact formatting rules:**
+
+1. Start the response with exactly three backticks followed by `json`.
+2. The opening marker must be exactly ` ```json `, with no IDs or extra attributes.
+3. Put the complete JSON object inside the code block.
+4. Close the code block with exactly three backticks.
+5. Do not split the result into multiple blocks.
+6. Do not put explanatory text before the block.
+7. Do not put explanatory text after the block.
+8. Do not return plain text JSON outside a code block.
+9. Do not use HTML.
+10. Do not add Markdown headings around the generated JSON.
+
+## REQUIRED JSON STRUCTURE
+
+The response must follow this exact schema:
+
+````text
+```json
+{
+  "set_id": "SET-7K2Q",
+  "words": [
+    {
+      "word": "Sample term",
+      "definition": "A formal textbook-style explanation of the business concept, written as one complete sentence.",
+      "key_definition": "A simple everyday explanation that is different.",
+      "source": "Business",
+      "letter_count": 11
+    }
+  ]
+}
+```
+````
+
+## TOP-LEVEL set_id (INTERNAL USE)
+
+Add ONE small top-level key `set_id` before `words`: the text `SET-` followed by 4 random capital letters/digits (for example `SET-7K2Q`). Generate a NEW random value for every response. It identifies this batch of words for the admin (to delete the most recent import). It is internal only and is never shown to learners. Do NOT put set_id inside the word entries; each entry still has exactly the five keys listed above. This top-level `set_id` is the only allowed addition to the structure.
+
+This example demonstrates the structure only. Do not reuse it as an actual vocabulary entry.
+
+The actual result must contain EXACTLY 50 entries inside the `words` array.
+
+The JSON must be directly copyable and valid.
+
+---
+
+# 17. FINAL INSTRUCTION
+
+Generate EXACTLY 50 NEW business vocabulary entries.
+
+Prioritize important, educationally relevant and varied terminology.
+
+Give every entry:
+- An accurate formal crossword definition.
+- A genuinely different, simple memory explanation.
+- An appropriate source category.
+- An accurately calculated letter count.
+
+Check both the static and dynamic exclusion lists.
+
+Validate all 50 entries.
+
+**MOST IMPORTANT: The `definition` and `key_definition` must serve different teaching purposes and must never be simple copies or paraphrases of one another.**
+
+Return ONLY one standard Markdown JSON code block.
+
+No introduction. No explanation. No commentary. No text outside the code block.

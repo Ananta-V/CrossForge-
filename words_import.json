@@ -1,0 +1,204 @@
+{
+ "words": [
+  {
+   "word": "Customer service",
+   "definition": "Assistance and advice provided by a company to people who buy or use its products or services."
+  },
+  {
+   "word": "Loan",
+   "definition": "Money lent or made available under a credit arrangement."
+  },
+  {
+   "word": "Budget",
+   "definition": "An estimate of income and expenditure for a set period of time."
+  },
+  {
+   "word": "Financial statement",
+   "definition": "A record or statement of financial expenditure or receipts relating to a particular period or purpose."
+  },
+  {
+   "word": "Debt",
+   "definition": "Something borrowed, especially a sum of money expected to be paid back with interest."
+  },
+  {
+   "word": "Lien",
+   "definition": "A right to keep possession of another person's property until a debt owed by that person is discharged."
+  },
+  {
+   "word": "Risk assessment",
+   "definition": "A formal decision-making process used when considering the economic feasibility of implementing controls and safeguards."
+  },
+  {
+   "word": "Grant",
+   "definition": "Non-repayable funds or products disbursed by one party to another."
+  },
+  {
+   "word": "Contract",
+   "definition": "A general agreement."
+  },
+  {
+   "word": "Human resources",
+   "definition": "The personnel of a business or organisation, especially when regarded as a significant asset."
+  },
+  {
+   "word": "Investment",
+   "definition": "The action or process of investing money for profit or material result."
+  },
+  {
+   "word": "Manufacturing",
+   "definition": "Economic activity concerned with processing raw materials and making goods in factories."
+  },
+  {
+   "word": "Board of directors",
+   "definition": "A group elected to represent stockholders, establish corporate management policies and make decisions on major company issues."
+  },
+  {
+   "word": "Capital",
+   "definition": "Wealth in the form of money or other assets owned by a person or organisation, or available for a particular purpose."
+  },
+  {
+   "word": "Stock",
+   "definition": "The value of the shares issued by a company."
+  },
+  {
+   "word": "Assets",
+   "definition": "Wealth in the form of money or other assets owned by a person or organisation."
+  },
+  {
+   "word": "Bonus",
+   "definition": "An amount of money added to wages, especially as a reward for good performance."
+  },
+  {
+   "word": "Stock price",
+   "definition": "The rate or value of the shares issued by a company."
+  },
+  {
+   "word": "Entrepreneur",
+   "definition": "A person who starts an enterprise."
+  },
+  {
+   "word": "Accounting",
+   "definition": "The action or process of keeping financial accounts."
+  },
+  {
+   "word": "Merchandising",
+   "definition": "The practice of making one's living by engaging in commerce."
+  },
+  {
+   "word": "Margin",
+   "definition": "A sum deposited with a broker to cover the risk of loss on a transaction or account."
+  },
+  {
+   "word": "Operations management",
+   "definition": "The detailed coordination of a complex operation involving many people, facilities or supplies."
+  },
+  {
+   "word": "Franchisee",
+   "definition": "A person who takes a franchise and operates under a contract or licensing agreement with the franchiser."
+  },
+  {
+   "word": "Franchisor",
+   "definition": "The parent company that grants the franchise and provides goods and services."
+  },
+  {
+   "word": "Franchise",
+   "definition": "A business system in which an operator obtains the right to use an established business name, brand or model."
+  },
+  {
+   "word": "Sole proprietorship",
+   "definition": "A business owned by one person."
+  },
+  {
+   "word": "Partnership",
+   "definition": "A business owned by two or more individuals."
+  },
+  {
+   "word": "Shareholder",
+   "definition": "A person who owns shares in a corporation."
+  },
+  {
+   "word": "Share",
+   "definition": "A unit of ownership in a corporation."
+  },
+  {
+   "word": "Dividend",
+   "definition": "A sum of money paid to shareholders; the part of a corporation's profit after taxes distributed to shareholders."
+  },
+  {
+   "word": "Merger",
+   "definition": "A process in which two businesses combine into one business or legal entity."
+  },
+  {
+   "word": "Acquisition",
+   "definition": "A process whereby one company combines with or takes over the ownership of another."
+  },
+  {
+   "word": "Joint venture",
+   "definition": "A business project or arrangement in which two or more parties combine skills or resources for a shared project."
+  },
+  {
+   "word": "Strategic alliance",
+   "definition": "An agreement between businesses to commit resources to achieve common objectives."
+  },
+  {
+   "word": "Limited liability",
+   "definition": "A condition in which owners' losses are limited to the amount they invested; personal assets are not used to cover business debts."
+  },
+  {
+   "word": "Unlimited liability",
+   "definition": "A condition in which responsibility for business debts can extend beyond the amount invested."
+  },
+  {
+   "word": "Equity",
+   "definition": "The net value of property or assets after subtracting mortgage or other liabilities."
+  },
+  {
+   "word": "Creditworthiness",
+   "definition": "A borrower's ability to carry debt and pay it when due."
+  },
+  {
+   "word": "Collateral",
+   "definition": "A borrower's assets that can be used to repay a debt."
+  },
+  {
+   "word": "Outsourcing",
+   "definition": "The relocation or transfer of some of a company's operations or functions to another company."
+  },
+  {
+   "word": "Offshoring",
+   "definition": "The practice of outsourcing or moving operations overseas."
+  },
+  {
+   "word": "Multinational corporation",
+   "definition": "A business organisation with operations in more than one country."
+  },
+  {
+   "word": "Domestic business",
+   "definition": "A business in which economic transactions are conducted within the geographical boundaries of one country."
+  },
+  {
+   "word": "E-commerce",
+   "definition": "A business model that allows companies and individuals to buy and sell goods and services over the internet."
+  },
+  {
+   "word": "Working capital",
+   "definition": "Money available to fund day-to-day operations and support future expansion."
+  },
+  {
+   "word": "Service",
+   "definition": "An activity or benefit supplied to customers, usually in return for payment, rather than a physical product."
+  },
+  {
+   "word": "Private limited company",
+   "definition": "A corporation that does not offer its shares of stock to the public for purchase."
+  },
+  {
+   "word": "Public limited company",
+   "definition": "A corporation that offers its shares of stock for public sale."
+  },
+  {
+   "word": "Business plan",
+   "definition": "A formal written summary of a business and/or financial security provided to potential investors."
+  }
+ ]
+}

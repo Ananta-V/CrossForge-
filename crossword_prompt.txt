@@ -1,0 +1,50 @@
+You are a professional crossword constructor. Build ONE crossword using ONLY the words in the WORD BANK and return the result inside ONE standard Markdown fenced JSON code block with a copy button.
+
+CRITICAL INSTRUCTION FOR THE RESPONSE:
+- Your response MUST start immediately with ```json and end with ```.
+- Return ONLY the ```json code block.
+- NO introduction, NO conversational opening, NO explanation, NO list of clues in plain text, NO text before or after the code block.
+- This ensures the JSON renders with a one-click "Copy code" button in ChatGPT.
+
+LAYOUT & INTERSECTION RULES (CRITICAL: WELL-INTERCONNECTED SKELETON)
+- Create a well-interconnected crossword grid with a balanced, organic interlocking structure.
+- Every word must cross at least 1 other word, and most words (especially longer ones) should intersect 2 to 3 crossing words.
+- Avoid loose "dangling" branches where words only touch at an extreme edge. Keep words tightly integrated across the grid.
+- Do NOT make a solid solid block of letters: sparse free-form crossword style with plenty of open space, but tightly woven intersections.
+- Use between {{MIN_WORDS}} and {{MAX_WORDS}} entries. Balanced split: roughly 50% Across and 50% Down.
+- The entire puzzle must form ONE single connected web (no disconnected islands or separate mini-puzzles).
+- Parallel words (running in the same direction) must NEVER touch side-by-side or head-to-tail without at least one empty square between them.
+- The square immediately before the first letter and immediately after the last letter of every word MUST be empty.
+- Every letter collision must be an exact match on that letter.
+- Coordinates are zero-based ("row" and "col" indicate the starting cell). "dir" is "A" (Across) or "D" (Down). Normalize so the top-leftmost cell is at row 0, col 0. Do NOT number the clues (the app numbers them automatically).
+
+CLUES (rewrite each definition as a crossword clue)
+- Write ONE clue per word by reframing its definition in the WORD BANK. Keep the meaning; do not invent facts.
+- Style: crossword-lab clues. Capitalised, ending with a full stop, usually a dictionary-style definition: "A person who owns shares in a corporation.", "The action or process of keeping financial accounts.", "A business owned by one person.", "Money that is owed or due.", "A sum of money that is paid to shareholders." Short clues are fine ("General agreement.", "Service department."). Long definitions may be tightened to one sentence but keep the key idea.
+- The clue must NEVER contain the answer word (or its obvious stem). If the definition does, rephrase it (for example "Resources: the personnel..." style prefixes are acceptable only when they do not give the answer away).
+- Different words must have clearly different clues.
+
+VERIFY BEFORE ANSWERING
+Rebuild the grid in your head from your entries. Every run of 2+ touching letters, across or down, must equal exactly one entry. Letters at crossings must match. The grid must be connected. All answers must come from the WORD BANK and be unique.
+
+REQUIRED OUTPUT STRUCTURE (inside a single ```json ``` block):
+```json
+{
+  "entries": [
+    {
+      "answer": "CUSTOMERSERVICE",
+      "clue": "Assistance and advice provided by a company to those people who buy or use its products or services.",
+      "dir": "A",
+      "row": 12,
+      "col": 3
+    },
+    {
+      "answer": "LOAN",
+      "clue": "The money lent or made available under a credit arrangement.",
+      "dir": "D",
+      "row": 8,
+      "col": 6
+    }
+  ]
+}
+```
