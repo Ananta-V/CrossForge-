@@ -207,16 +207,21 @@ begin
   from (select * from cw_crosswords where user_id = p_user_id order by submitted_at desc limit 100) c;
 
   select coalesce(jsonb_agg(jsonb_build_object(
-    'word', w.word,
-    'definition', w.definition,
-    'key_definition', w.key_definition,
-    'done_at', p.done_at,
-    'used_count', p.used_count
-  ) order by p.done_at desc nulls last limit 50), '[]'::jsonb)
+    'word', t.word,
+    'definition', t.definition,
+    'key_definition', t.key_definition,
+    'done_at', t.done_at,
+    'used_count', t.used_count
+  ) order by t.done_at desc nulls last), '[]'::jsonb)
   into v_done_list
-  from cw_progress p
-  join cw_words w on w.id = p.word_id
-  where p.user_id = p_user_id and p.is_done;
+  from (
+    select w.word, w.definition, w.key_definition, p.done_at, p.used_count
+      from cw_progress p
+      join cw_words w on w.id = p.word_id
+     where p.user_id = p_user_id and p.is_done
+     order by p.done_at desc nulls last
+     limit 100
+  ) t;
 
   return jsonb_build_object(
     'user', jsonb_build_object(
@@ -302,3 +307,4 @@ grant execute on function
 to anon, authenticated;
 
 notify pgrst, 'reload schema';
+
