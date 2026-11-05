@@ -6,7 +6,7 @@ CRITICAL INSTRUCTION FOR THE RESPONSE:
 - NO introduction, NO conversational opening, NO explanation, NO list of clues in plain text, NO text before or after the code block.
 - This ensures the JSON renders with a one-click "Copy code" button in ChatGPT.
 
-LAYOUT & INTERSECTION RULES (CRITICAL: WELL-INTERCONNECTED SKELETON)
+LAYOUT &  INTERSECTION RULES (CRITICAL: WELL-INTERCONNECTED SKELETON)
 - Create a well-interconnected crossword grid with a balanced, organic interlocking structure.
 - Every word must cross at least 1 other word, and most words (especially longer ones) should intersect 2 to 3 crossing words.
 - Avoid loose "dangling" branches where words only touch at an extreme edge. Keep words tightly integrated across the grid.
