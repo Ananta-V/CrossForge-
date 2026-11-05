@@ -21,7 +21,7 @@ SELECTION & INTERSECTION RULES
 REQUIRED OUTPUT STRUCTURE (inside a single ```json ``` block):
 ```json
 {
-  "entries": [
+  "words": [
     {
       "answer": "CUSTOMERSERVICE",
       "clue": "Assistance and advice provided by a company to those people who buy or use its products or services.",
