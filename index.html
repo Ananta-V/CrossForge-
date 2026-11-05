@@ -1577,7 +1577,23 @@
       color: var(--muted);
       align-self: center
     }
-  </style>
+  
+    .cell.active-word {
+      background: #252b20 !important;
+    }
+    .cell.active-word input {
+      background: #2b3325 !important;
+      color: #f0f1e9 !important;
+    }
+    .cell input:focus {
+      background: #d9efad !important;
+      color: #151811 !important;
+      box-shadow: inset 0 0 0 2px var(--lime) !important;
+    }
+    .leaderboard-btn {
+      cursor: pointer;
+    }
+</style>
 </head>
 
 <body>
@@ -1672,7 +1688,8 @@
     <main class="main">
       <header class="topbar">
         <nav class="navbar"><button class="navbtn active" data-view="study">Learn words</button><button class="navbtn"
-            data-view="crossword">Solve a crossword</button></nav>
+            data-view="crossword">Solve a crossword</button><button class="navbtn"
+            data-view="leaderboard">Leaderboard</button></nav>
         <div class="top-actions"><span class="set-count" id="setCount"></span><button class="import" id="logoutBtn">Log
             out</button></div>
       </header>
@@ -1713,13 +1730,34 @@
       </section>
       <section class="view" id="crosswordView">
         <div class="setup" id="setup">
-          <div class="eyebrow">Crossword</div>
-          <div style="font-size:14px;font-weight:750;margin-top:6px" id="cwInfo"></div>
-          <p class="muted" style="margin-top:10px">Only words you have marked as <b>done</b> are used. Press <b>Generate
-              crossword</b>, copy the prompt into ChatGPT, then paste the JSON it gives you. Use <b>From scratch</b> to
-            forget which words were used before and start again with a fresh random pick from all your done words.</p>
-          <div class="setup-grid"><button class="primary" id="startPuzzle">Generate crossword</button><button
-              class="secondary" id="scratchBtn">From scratch</button></div>
+          <div class="eyebrow">Crossword Mode</div>
+          <div style="font-size:16px;font-weight:800;margin-top:6px" id="cwInfo"></div>
+          <p class="muted" style="margin-top:8px; line-height:1.5;">
+            Choose a crossword mode. Only vocabulary terms you have marked as <b>done</b> in Learn words are included.
+          </p>
+          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:14px; margin-top:16px;">
+            <div style="background:#131512; border:1px solid var(--line); border-radius:12px; padding:18px; display:flex; flex-direction:column; justify-content:space-between;">
+              <div>
+                <div style="font-size:11px; font-weight:800; color:var(--muted); letter-spacing:1px; text-transform:uppercase;">PRACTICE MODE</div>
+                <div style="font-size:16px; font-weight:800; margin:4px 0 8px;">Generate crossword</div>
+                <p class="muted" style="font-size:12px; line-height:1.5; margin:0 0 16px;">
+                  Casual practice with flexible timers (5 to 60 mins). Solved words are recorded so follow-up puzzles avoid repetition.
+                </p>
+              </div>
+              <button class="secondary" id="startPuzzle" style="width:100%; padding:11px; font-weight:750;">Generate crossword</button>
+            </div>
+
+            <div style="background:#172213; border:1px solid #3c522b; border-radius:12px; padding:18px; display:flex; flex-direction:column; justify-content:space-between;">
+              <div>
+                <div style="font-size:11px; font-weight:800; color:var(--lime); letter-spacing:1px; text-transform:uppercase;">🏆 LEADERBOARD CHALLENGE</div>
+                <div style="font-size:16px; font-weight:800; margin:4px 0 8px; color:var(--ink);">Scratch crossword</div>
+                <p class="muted" style="font-size:12px; line-height:1.5; margin:0 0 16px;">
+                  Resets word history and picks from all your done terms at random. <b>10-minute timer limit</b>. Fast solvers earn points on the Leaderboard!
+                </p>
+              </div>
+              <button class="primary" id="scratchBtn" style="width:100%; padding:11px; font-weight:800;">Scratch crossword (10 min)</button>
+            </div>
+          </div>
         </div>
         <div class="puzzle" id="puzzle">
           <div class="puzzle-top">
@@ -1762,6 +1800,7 @@
               <div class="puzzle-actions" style="margin-top:16px; display:flex; gap:10px; flex-wrap:wrap;">
                 <button class="primary" id="tryAgain">Try another crossword</button>
                 <button class="secondary" id="goToLearn">Go to learn</button>
+                <button class="secondary" id="goToLeaderboard" style="display:none;">View Leaderboard</button>
               </div>
             </div>
             <div class="results-words-col">
@@ -1771,39 +1810,115 @@
           </div>
         </div>
       </section>
+      <section class="view" id="leaderboardView">
+        <div class="stage" style="max-width:920px; padding-top:10px;">
+          <div class="panel">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:15px; flex-wrap:wrap;">
+              <div>
+                <div class="eyebrow">COMPETITIVE RANKINGS</div>
+                <h2 style="margin:6px 0 4px; letter-spacing:-0.8px;">Scratch Crossword Leaderboard</h2>
+                <p class="muted" style="margin:0; max-width:680px; font-size:12px; line-height:1.5;">
+                  Rankings are calculated exclusively from <b>Scratch Crosswords</b> (10-minute timer). Points are awarded for completed words, letter accuracy, and time bonuses, with penalties for errors.
+                </p>
+              </div>
+              <button class="secondary" id="refreshLeaderboardBtn" style="white-space:nowrap; padding:9px 14px; font-size:11px; font-weight:750;">⟳ Refresh rankings</button>
+            </div>
+
+            <div id="leaderboardStatsBar" style="display:flex; gap:16px; margin:18px 0 14px; padding:12px 16px; background:#131512; border:1px solid var(--line); border-radius:10px; font-size:12px;">
+              <span>Loading stats...</span>
+            </div>
+
+            <div style="overflow-x:auto; margin-top:8px;">
+              <table class="t" id="leaderboardTable">
+                <thead>
+                  <tr>
+                    <th style="width:75px;">Rank</th>
+                    <th>Learner</th>
+                    <th style="text-align:right;">Scratch Points</th>
+                    <th style="text-align:center;">Puzzles Solved</th>
+                    <th style="text-align:right;">Last Active</th>
+                  </tr>
+                </thead>
+                <tbody id="leaderboardBody">
+                  <tr><td colspan="5" class="muted" style="text-align:center; padding:30px;">Loading rankings...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
     </main>
   </div>
 
   <!-- ============ PROMPT / IMPORT MODAL ============ -->
   <div class="spec-modal" id="specModal">
-    <div class="spec-box">
-      <div class="eyebrow">Build a crossword</div>
-      <div class="step">1 · Copy the prompt into ChatGPT</div>
-      <p class="muted">Copies the crossword constructor prompt along with all your completed words. This scratch feature
-        will take all words that you have marked as done and generate the cross word in random </p>
-      <div class="puzzle-actions" style="margin:8px 0; gap:8px; display:flex; flex-wrap:wrap;">
-        <button class="primary" id="copyFollow">Copy follow-up prompt (same chat)</button>
-        <button class="secondary" id="copyFull">Copy full prompt (new chat)</button>
+    <div class="spec-box" style="max-width:760px;">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div class="eyebrow" id="modalEyebrow">BUILD A CROSSWORD</div>
+        <div id="modalModeBadge" style="font-size:10px; font-weight:800; padding:3px 8px; border-radius:6px; background:#242a1f; color:var(--lime);">PRACTICE MODE</div>
       </div>
-      <div class="step">2 · Paste the JSON it returns</div>
-      <textarea id="specText" placeholder='{"entries":[{"answer":"LOAN","clue":"...","dir":"A","row":3,"col":2}, ...]}'
-        spellcheck="false"></textarea>
-      <div class="puzzle-actions" style="margin-top:6px"><button class="secondary" id="specFileBtn">Upload JSON
-          file</button><input type="file" id="specFile" accept=".json,application/json" hidden></div>
-      <div class="step">3 · Timer</div>
-      <div class="field"><select id="minutes">
+      <h3 style="margin:6px 0 14px; letter-spacing:-0.5px;" id="modalHeading">Step 1: Copy constructor prompt for ChatGPT</h3>
+
+      <div class="prompt-guide-box" style="display:flex; flex-direction:column; gap:12px; margin-bottom:18px;">
+        <!-- Option 1: Full Prompt (ALWAYS FIRST) -->
+        <div style="background:#131512; border:1px solid var(--line); border-radius:10px; padding:14px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <span style="font-size:11px; font-weight:800; color:var(--lime); letter-spacing:0.8px;">OPTION 1 · STARTING A NEW CHAT</span>
+            <span style="font-size:10px; color:var(--muted);">First time / New chat tab</span>
+          </div>
+          <p class="muted" style="font-size:12px; line-height:1.5; margin:0 0 10px;">
+            Click below to copy the <b>full prompt</b> containing complete layout rules and all your completed vocabulary terms. Paste into a new ChatGPT tab to construct Puzzle #1.
+          </p>
+          <button class="primary" id="copyFull" style="width:100%; padding:11px; font-size:12px;">📋 Copy full prompt (new chat)</button>
+        </div>
+
+        <!-- Option 2: Follow-up Prompt (ALWAYS SECOND) -->
+        <div style="background:#131512; border:1px solid var(--line); border-radius:10px; padding:14px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <span style="font-size:11px; font-weight:800; color:#b0b5a6; letter-spacing:0.8px;">OPTION 2 · CONTINUING IN THE SAME CHAT</span>
+            <span style="font-size:10px; color:var(--muted);">Next puzzle in same chat</span>
+          </div>
+          <p class="muted" style="font-size:12px; line-height:1.5; margin:0 0 10px;">
+            Already generated a puzzle in that ChatGPT tab? Click below and paste it in the <b>same chat</b>! ChatGPT will construct the next crossword prioritizing your <b>remaining unused words</b>.
+          </p>
+          <button class="secondary" id="copyFollow" style="width:100%; padding:11px; font-size:12px;">📋 Copy follow-up prompt (same chat)</button>
+        </div>
+
+        <div style="font-size:11px; line-height:1.5; color:var(--muted); background:#1b1f18; border:1px dashed #3a4631; border-radius:8px; padding:10px 12px;">
+          ⚡ <b>Note on dynamic content:</b> The prompts copied by both buttons update <b>dynamically in real time</b>. As you mark more words done or solve crosswords, your latest vocabulary and unused terms are automatically refreshed in the prompt.
+        </div>
+      </div>
+
+      <div class="step">Step 2: Paste the JSON returned by ChatGPT</div>
+      <textarea id="specText" placeholder='{"entries":[{"answer":"LOAN","clue":"...","dir":"A","row":3,"col":2}, ...]}' spellcheck="false" style="height:150px;"></textarea>
+
+      <div class="puzzle-actions" style="margin-top:6px">
+        <button class="secondary" id="specFileBtn">Upload JSON file</button>
+        <input type="file" id="specFile" accept=".json,application/json" hidden>
+      </div>
+
+      <div class="step" style="margin-top:16px;">Step 3: Time limit</div>
+      <div class="field" id="timerField">
+        <select id="minutes">
           <option value="5">5 minutes</option>
           <option value="8">8 minutes</option>
-          <option value="10">10 minutes</option>
-          <option value="15" selected>15 minutes</option>
+          <option value="10" selected>10 minutes</option>
+          <option value="15">15 minutes</option>
           <option value="20">20 minutes</option>
           <option value="30">30 minutes</option>
           <option value="45">45 minutes</option>
           <option value="60">60 minutes</option>
-        </select></div>
+        </select>
+        <div id="scratchTimerNotice" style="display:none; font-size:12px; font-weight:700; color:var(--lime); margin-top:8px;">
+          ⏱️ Fixed at 10 minutes for Scratch Crossword (Leaderboard Mode)
+        </div>
+      </div>
+
       <div class="spec-err" id="specErr"></div>
-      <div class="puzzle-actions"><button class="primary" id="specBuild">Build crossword &amp; start
-          timer</button><button class="secondary" id="specCancel">Cancel</button></div>
+      <div class="puzzle-actions" style="margin-top:16px;">
+        <button class="primary" id="specBuild">Build crossword &amp; start timer</button>
+        <button class="secondary" id="specCancel">Cancel</button>
+      </div>
     </div>
   </div>
   <div class="toast" id="toast"></div>
@@ -1932,12 +2047,54 @@
     $('doneBtn').onclick = async () => { const w = W[current]; if (!w) return; const v = !w.is_done; w.is_done = v; markDoneUI(); cacheState(); try { await rpc('cw_set_done', { ...A(), p_word_id: w.id, p_done: v }) } catch (err) { w.is_done = !v; markDoneUI(); toast(err.message) } };
 
     function switchView(name) {
-      const t = name === 'crossword' ? 'crosswordView' : 'studyView';
-      document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === t));
+      const targetId = name === 'crossword' ? 'crosswordView' : (name === 'leaderboard' ? 'leaderboardView' : 'studyView');
+      document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === targetId));
       document.querySelectorAll('.navbtn[data-view]').forEach(b => b.classList.toggle('active', b.dataset.view === name));
       $('app').classList.toggle('crossword-mode', name === 'crossword');
       window.scrollTo({ top: 0, behavior: 'instant' });
-      if (name === 'crossword') { updateCwInfo(); if (puzzle) requestAnimationFrame(fitSolverGrid) }
+      if (name === 'crossword') { updateCwInfo(); if (puzzle) requestAnimationFrame(fitSolverGrid); }
+      if (name === 'leaderboard') { loadLeaderboard(); }
+    }
+
+    async function loadLeaderboard() {
+      const tbody = $('leaderboardBody');
+      const stats = $('leaderboardStatsBar');
+      if (!tbody) return;
+      tbody.innerHTML = '<tr><td colspan="5" class="muted" style="text-align:center;padding:24px;">Loading rankings...</td></tr>';
+      try {
+        const list = await rpc('cw_leaderboard', {});
+        if (!Array.isArray(list) || !list.length) {
+          tbody.innerHTML = '<tr><td colspan="5" class="muted" style="text-align:center;padding:30px;">No Scratch Crosswords recorded yet. Complete a 10-minute Scratch Crossword to take #1!</td></tr>';
+          if (stats) stats.innerHTML = '<span><b>0</b> players ranked</span>';
+          return;
+        }
+        const myRankIdx = auth ? list.findIndex(x => x.username.toLowerCase() === auth.u.toLowerCase()) : -1;
+        const myScore = myRankIdx >= 0 ? list[myRankIdx].points : 0;
+        if (stats) {
+          stats.innerHTML = `
+            <div style="flex:1;">Total Players: <b>${list.length}</b></div>
+            ${auth ? `<div style="flex:1;">Your Rank: <b style="color:var(--lime)">${myRankIdx >= 0 ? '#' + (myRankIdx + 1) : 'Unranked'}</b></div>
+            <div style="flex:1;">Your Scratch Points: <b style="color:var(--lime)">${myScore} pts</b></div>` : ''}
+          `;
+        }
+
+        tbody.innerHTML = list.map((item, idx) => {
+          const isMe = auth && item.username.toLowerCase() === auth.u.toLowerCase();
+          const rankBadge = idx === 0 ? '🥇 #1' : (idx === 1 ? '🥈 #2' : (idx === 2 ? '🥉 #3' : `#${idx + 1}`));
+          const lastActiveFmt = item.last_active ? new Date(item.last_active).toLocaleDateString() : '—';
+          return `
+            <tr style="${isMe ? 'background:#242a1f;' : ''}">
+              <td><b style="${idx < 3 ? 'color:var(--lime);font-size:13px;' : 'color:var(--muted)'}">${rankBadge}</b></td>
+              <td><b>${esc(item.username)}</b> ${isMe ? '<span style="font-size:10px;padding:2px 6px;border-radius:4px;background:#354425;color:var(--lime);margin-left:6px;font-weight:800;">YOU</span>' : ''}</td>
+              <td style="text-align:right;"><span style="font-size:14px;font-weight:850;color:var(--lime)">${item.points}</span> <span style="font-size:10px;color:var(--muted)">pts</span></td>
+              <td style="text-align:center;color:var(--muted);">${item.games || 0}</td>
+              <td style="text-align:right;color:var(--muted);">${lastActiveFmt}</td>
+            </tr>
+          `;
+        }).join('');
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="5" class="muted" style="text-align:center;padding:24px;color:#f2b2a5">Failed to load leaderboard: ${esc(err.message)}</td></tr>`;
+      }
     }
     document.querySelectorAll('.navbtn[data-view]').forEach(b => b.addEventListener('click', () => switchView(b.dataset.view)));
     function showQuestionDrawer(open) { const p = $('questionsPanel'); p.classList.toggle('drawer-open', open); document.body.classList.toggle('drawer-active', open); $('questionsTab').classList.toggle('active', open); $('puzzleTab').classList.toggle('active', !open) }
@@ -1990,28 +2147,44 @@
       return s;
     }
     async function copyText(t) { try { await navigator.clipboard.writeText(t) } catch (e) { const x = document.createElement('textarea'); x.value = t; document.body.appendChild(x); x.select(); document.execCommand('copy'); x.remove() } toast('Prompt copied') }
-    function openSpecModal(preferFull = false) {
+    let isScratchMode = false;
+    function openSpecModal(isScratch = false) {
       $('specErr').textContent = ''; $('specText').value = '';
-      const hasUsed = W.some(w => w.used_count > 0);
-      const unusedCount = doneWords().filter(w => !w.used_count).length;
-      const note = $('specModal').querySelector('p.muted');
-      if (note) {
-        if (!hasUsed || preferFull) {
-          note.innerHTML = `Starting fresh? Copy <b>Full prompt</b> for a brand new ChatGPT chat. All <b>${doneWords().length}</b> completed words will be provided.`;
-          $('copyFollow').className = 'secondary';
-          $('copyFull').className = 'primary';
-        } else {
-          note.innerHTML = `Continuing in the <b>same ChatGPT conversation</b>? Click <b>Copy follow-up prompt</b>: it tells ChatGPT to prioritize your <b>${unusedCount}</b> unused words and avoid previous crossword words.`;
-          $('copyFollow').className = 'primary';
-          $('copyFull').className = 'secondary';
-        }
+      isScratchMode = !!isScratch;
+      const minutesSelect = $('minutes');
+      const notice = $('scratchTimerNotice');
+
+      if (isScratchMode) {
+        $('modalEyebrow').textContent = 'SCRATCH CROSSWORD (LEADERBOARD)';
+        $('modalModeBadge').textContent = '🏆 10-MIN CHALLENGE';
+        $('modalModeBadge').style.background = '#283820';
+        $('modalModeBadge').style.color = 'var(--lime)';
+        if (minutesSelect) { minutesSelect.value = '10'; minutesSelect.disabled = true; }
+        if (notice) notice.style.display = 'block';
+      } else {
+        $('modalEyebrow').textContent = 'PRACTICE CROSSWORD';
+        $('modalModeBadge').textContent = 'PRACTICE MODE';
+        $('modalModeBadge').style.background = '#20231e';
+        $('modalModeBadge').style.color = '#a0a397';
+        if (minutesSelect) minutesSelect.disabled = false;
+        if (notice) notice.style.display = 'none';
       }
       $('specModal').classList.add('open');
     }
     const MIN_DONE = 5;
     function needMore() { const n = doneWords().length; if (n < MIN_DONE) { toast(`Mark at least ${MIN_DONE} words as done first (you have ${n}).`); return true } return false }
-    $('startPuzzle').onclick = () => { if (needMore()) return; openSpecModal(false) };
-    $('scratchBtn').onclick = async () => { if (needMore()) return; try { await rpc('cw_reset_used', A()); W.forEach(w => w.used_count = 0); updateCwInfo(); openSpecModal(true) } catch (err) { toast(err.message) } };
+    $('startPuzzle').onclick = () => { if (needMore()) return; openSpecModal(false); };
+    $('scratchBtn').onclick = async () => {
+      if (needMore()) return;
+      try {
+        await rpc('cw_reset_used', A());
+        W.forEach(w => w.used_count = 0);
+        updateCwInfo();
+        openSpecModal(true);
+      } catch (err) {
+        toast(err.message);
+      }
+    };
     $('copyFull').onclick = async () => copyText(await fullPrompt());
     $('copyFollow').onclick = async () => copyText(await followPrompt());
     $('specCancel').onclick = () => $('specModal').classList.remove('open');
@@ -2069,50 +2242,286 @@
       } catch (err) { $('specErr').textContent = err.message }
     };
     function launchPuzzle(g) {
-      clearInterval(timerId); puzzle = g; finished = false; selectedClue = null; timeLeft = Math.round(+$('minutes').value * 60); startedAt = Date.now();
+      clearInterval(timerId);
+      g.isScratch = isScratchMode;
+      puzzle = g;
+      finished = false;
+      selectedClue = null;
+      timeLeft = isScratchMode ? (10 * 60) : Math.round(+$('minutes').value * 60);
+      startedAt = Date.now();
       $('app').classList.add('solving-crossword');
       $('setup').style.display = 'none'; $('puzzle').style.display = 'flex'; $('results').style.display = 'none';
-      $('puzzleMeta').textContent = `${g.entries.length} words · ${g.rows} × ${g.cols} grid`;
+      $('puzzleMeta').textContent = `${g.isScratch ? '🏆 Scratch Crossword · 10 min · ' : ''}${g.entries.length} words · ${g.rows} × ${g.cols} grid`;
       drawPuzzle(); updateTimer(); timerId = setInterval(() => { timeLeft--; updateTimer(); if (timeLeft <= 0) finishGame(true) }, 1000);
     }
 
-    /* =================== GRID =================== */
+    /* =================== GRID & TYPING ENGINE =================== */
     let curDir = 'A';
-    function drawPuzzle() {
-      const g = $('crossGrid'); g.style.gridTemplateColumns = `repeat(${puzzle.cols},var(--solver-cell,30px))`; g.innerHTML = '';
-      const numMap = {};[...puzzle.across, ...puzzle.down].forEach(e => numMap[`${e.r},${e.c}`] = e.num);
-      for (let r = 0; r < puzzle.rows; r++)for (let c = 0; c < puzzle.cols; c++) {
-        const ch = puzzle.grid[r][c], cell = document.createElement('div'); cell.className = 'cell' + (ch ? '' : ' black');
-        if (ch) {
-          if (numMap[`${r},${c}`]) { const n = document.createElement('span'); n.className = 'num'; n.textContent = numMap[`${r},${c}`]; cell.appendChild(n) }
-          const inp = document.createElement('input'); inp.maxLength = 1; inp.autocomplete = 'off'; inp.dataset.r = r; inp.dataset.c = c; inp.setAttribute('aria-label', `Row ${r + 1} column ${c + 1}`);
-          inp.oninput = () => { inp.value = inp.value.toUpperCase().replace(/[^A-Z]/g, '').slice(-1); if (inp.value) moveNext(r, c) };
-          inp.onkeydown = e => { if (e.key === 'Backspace' && !inp.value) movePrev(r, c); if (e.key === 'ArrowRight') { curDir = 'A'; focusCell(r, c + 1) } if (e.key === 'ArrowLeft') { curDir = 'A'; focusCell(r, c - 1) } if (e.key === 'ArrowDown') { curDir = 'D'; focusCell(r + 1, c) } if (e.key === 'ArrowUp') { curDir = 'D'; focusCell(r - 1, c) } };
-          cell.appendChild(inp)
+    let lastFocusedCell = null;
+
+    function cellAt(r, c) {
+      return document.querySelector(`.cell input[data-r="${r}"][data-c="${c}"]`);
+    }
+
+    function findEntryAt(r, c, dir) {
+      if (!puzzle) return null;
+      const list = dir === 'A' ? puzzle.across : puzzle.down;
+      return list.find(e => {
+        if (dir === 'A') return e.r === r && c >= e.c && c < e.c + e.answer.length;
+        return e.c === c && r >= e.r && r < e.r + e.answer.length;
+      });
+    }
+
+    function highlightActiveEntry(r, c) {
+      if (!puzzle) return;
+      let entry = findEntryAt(r, c, curDir);
+      if (!entry) {
+        const altDir = curDir === 'A' ? 'D' : 'A';
+        const altEntry = findEntryAt(r, c, altDir);
+        if (altEntry) {
+          curDir = altDir;
+          entry = altEntry;
         }
-        g.appendChild(cell)
       }
-      renderClues('across', puzzle.across); renderClues('down', puzzle.down); requestAnimationFrame(fitSolverGrid);
+
+      // Highlight active word cells
+      document.querySelectorAll('.cell.active-word').forEach(x => x.classList.remove('active-word'));
+      if (entry) {
+        for (let i = 0; i < entry.answer.length; i++) {
+          const rr = entry.r + (entry.dir === 'D' ? i : 0);
+          const cc = entry.c + (entry.dir === 'A' ? i : 0);
+          const cellEl = cellAt(rr, cc)?.parentElement;
+          if (cellEl) cellEl.classList.add('active-word');
+        }
+
+        // Highlight clue in clue lists
+        document.querySelectorAll('.clue.selected').forEach(x => x.classList.remove('selected'));
+        const dirName = entry.dir === 'A' ? 'across' : 'down';
+        const clueEl = document.querySelector(`.clue[data-dir="${dirName}"][data-num="${entry.num}"]`);
+        if (clueEl) {
+          clueEl.classList.add('selected');
+          clueEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        }
+      }
     }
+
+    function toggleDirAt(r, c) {
+      const hasA = !!findEntryAt(r, c, 'A');
+      const hasD = !!findEntryAt(r, c, 'D');
+      if (hasA && hasD) {
+        curDir = curDir === 'A' ? 'D' : 'A';
+        highlightActiveEntry(r, c);
+      }
+    }
+
+    function moveNext(r, c) {
+      let active = findEntryAt(r, c, curDir);
+      if (!active) {
+        const altDir = curDir === 'A' ? 'D' : 'A';
+        active = findEntryAt(r, c, altDir);
+        if (active) curDir = altDir;
+      }
+      if (!active) return null;
+      const nextR = r + (curDir === 'D' ? 1 : 0);
+      const nextC = c + (curDir === 'A' ? 1 : 0);
+      if (curDir === 'A' && nextC < active.c + active.answer.length) {
+        const nextInp = cellAt(nextR, nextC);
+        if (nextInp) { nextInp.focus(); nextInp.select(); return nextInp; }
+      } else if (curDir === 'D' && nextR < active.r + active.answer.length) {
+        const nextInp = cellAt(nextR, nextC);
+        if (nextInp) { nextInp.focus(); nextInp.select(); return nextInp; }
+      }
+      return null;
+    }
+
+    function movePrev(r, c) {
+      let active = findEntryAt(r, c, curDir);
+      if (!active) {
+        const altDir = curDir === 'A' ? 'D' : 'A';
+        active = findEntryAt(r, c, altDir);
+        if (active) curDir = altDir;
+      }
+      if (!active) return null;
+      const prevR = r - (curDir === 'D' ? 1 : 0);
+      const prevC = c - (curDir === 'A' ? 1 : 0);
+      if (curDir === 'A' && prevC >= active.c) {
+        const prevInp = cellAt(prevR, prevC);
+        if (prevInp) { prevInp.focus(); prevInp.select(); return prevInp; }
+      } else if (curDir === 'D' && prevR >= active.r) {
+        const prevInp = cellAt(prevR, prevC);
+        if (prevInp) { prevInp.focus(); prevInp.select(); return prevInp; }
+      }
+      return null;
+    }
+
+    function drawPuzzle() {
+      const g = $('crossGrid');
+      g.style.gridTemplateColumns = `repeat(${puzzle.cols},var(--solver-cell,30px))`;
+      g.innerHTML = '';
+      lastFocusedCell = null;
+      const numMap = {};
+      [...puzzle.across, ...puzzle.down].forEach(e => numMap[`${e.r},${e.c}`] = e.num);
+
+      for (let r = 0; r < puzzle.rows; r++) {
+        for (let c = 0; c < puzzle.cols; c++) {
+          const ch = puzzle.grid[r][c];
+          const cell = document.createElement('div');
+          cell.className = 'cell' + (ch ? '' : ' black');
+
+          if (ch) {
+            if (numMap[`${r},${c}`]) {
+              const n = document.createElement('span');
+              n.className = 'num';
+              n.textContent = numMap[`${r},${c}`];
+              cell.appendChild(n);
+            }
+            const inp = document.createElement('input');
+            inp.maxLength = 1;
+            inp.autocomplete = 'off';
+            inp.spellcheck = false;
+            inp.dataset.r = r;
+            inp.dataset.c = c;
+            inp.setAttribute('aria-label', `Row ${r + 1} column ${c + 1}`);
+
+            inp.onfocus = () => {
+              highlightActiveEntry(r, c);
+              inp.select();
+            };
+
+            inp.onclick = () => {
+              if (lastFocusedCell === inp) {
+                toggleDirAt(r, c);
+              }
+              lastFocusedCell = inp;
+              inp.select();
+            };
+
+            inp.onkeydown = e => {
+              if (e.key === 'Tab') return;
+              if (e.key === 'Backspace') {
+                e.preventDefault();
+                if (inp.value) {
+                  inp.value = '';
+                } else {
+                  const prev = movePrev(r, c);
+                  if (prev) prev.value = '';
+                }
+                return;
+              }
+              if (e.key === ' ') {
+                e.preventDefault();
+                toggleDirAt(r, c);
+                return;
+              }
+              if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                curDir = 'A';
+                const next = cellAt(r, c + 1);
+                if (next) { next.focus(); next.select(); }
+                return;
+              }
+              if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                curDir = 'A';
+                const prev = cellAt(r, c - 1);
+                if (prev) { prev.focus(); prev.select(); }
+                return;
+              }
+              if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                curDir = 'D';
+                const next = cellAt(r + 1, c);
+                if (next) { next.focus(); next.select(); }
+                return;
+              }
+              if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                curDir = 'D';
+                const prev = cellAt(r - 1, c);
+                if (prev) { prev.focus(); prev.select(); }
+                return;
+              }
+              if (e.key.length === 1 && /[a-zA-Z]/.test(e.key)) {
+                e.preventDefault();
+                inp.value = e.key.toUpperCase();
+                moveNext(r, c);
+                return;
+              }
+            };
+
+            inp.oninput = () => {
+              const val = inp.value.toUpperCase().replace(/[^A-Z]/g, '').slice(-1);
+              inp.value = val;
+              if (val) moveNext(r, c);
+            };
+
+            cell.appendChild(inp);
+          }
+          g.appendChild(cell);
+        }
+      }
+
+      renderClues('across', puzzle.across);
+      renderClues('down', puzzle.down);
+      requestAnimationFrame(fitSolverGrid);
+
+      // Auto-focus the first clue cell
+      if (puzzle.entries && puzzle.entries.length) {
+        const first = puzzle.across[0] || puzzle.down[0] || puzzle.entries[0];
+        curDir = first.dir;
+        setTimeout(() => {
+          const firstCell = cellAt(first.r, first.c);
+          if (firstCell) {
+            firstCell.focus();
+            firstCell.select();
+            highlightActiveEntry(first.r, first.c);
+          }
+        }, 50);
+      }
+    }
+
     function fitSolverGrid() {
-      if (!puzzle) return; const host = $('gridPanel'), grid = $('crossGrid'); if (!host || !$('crosswordView').classList.contains('active')) return;
-      const w = host.clientWidth - 12, h = host.clientHeight - 12, gap = 1, cell = Math.max(8, Math.min(34, (w - gap * (puzzle.cols - 1) - 6) / puzzle.cols, (h - gap * (puzzle.rows - 1) - 6) / puzzle.rows));
-      grid.style.setProperty('--solver-cell', cell + 'px'); grid.style.gridTemplateColumns = `repeat(${puzzle.cols},${cell}px)`;
+      if (!puzzle) return;
+      const host = $('gridPanel'), grid = $('crossGrid');
+      if (!host || !$('crosswordView').classList.contains('active')) return;
+      const w = host.clientWidth - 12, h = host.clientHeight - 12, gap = 1;
+      const cell = Math.max(8, Math.min(34, (w - gap * (puzzle.cols - 1) - 6) / puzzle.cols, (h - gap * (puzzle.rows - 1) - 6) / puzzle.rows));
+      grid.style.setProperty('--solver-cell', cell + 'px');
+      grid.style.gridTemplateColumns = `repeat(${puzzle.cols},${cell}px)`;
     }
+
     function renderClues(dir, list) {
-      $(dir + 'Clues').innerHTML = list.sort((a, b) => a.num - b.num).map(e => `<div class="clue" data-dir="${dir}" data-num="${e.num}"><strong>${e.num}.</strong><span>${esc(e.definition)} <span style="color:#999">(${e.answer.length})</span></span></div>`).join('');
-      $(dir + 'Clues').querySelectorAll('.clue').forEach(el => el.onclick = () => { selectedClue = list.find(x => x.num === +el.dataset.num); curDir = dir === 'across' ? 'A' : 'D'; document.querySelectorAll('.clue').forEach(x => x.classList.remove('selected')); el.classList.add('selected'); cellAt(selectedClue.r, selectedClue.c)?.focus() });
+      $(dir + 'Clues').innerHTML = list.sort((a, b) => a.num - b.num).map(e => `
+        <div class="clue" data-dir="${dir}" data-num="${e.num}">
+          <strong>${e.num}.</strong><span>${esc(e.definition)} <span style="color:#999">(${e.answer.length})</span></span>
+        </div>
+      `).join('');
+
+      $(dir + 'Clues').querySelectorAll('.clue').forEach(el => el.onclick = () => {
+        selectedClue = list.find(x => x.num === +el.dataset.num);
+        if (!selectedClue) return;
+        curDir = dir === 'across' ? 'A' : 'D';
+        const target = cellAt(selectedClue.r, selectedClue.c);
+        if (target) {
+          target.focus();
+          target.select();
+          highlightActiveEntry(selectedClue.r, selectedClue.c);
+        }
+      });
     }
-    function cellAt(r, c) { return document.querySelector(`.cell input[data-r="${r}"][data-c="${c}"]`) }
-    function focusCell(r, c) { cellAt(r, c)?.focus() }
-    function setDirFor(r, c) { const h = cellAt(r, c - 1) || cellAt(r, c + 1), v = cellAt(r - 1, c) || cellAt(r + 1, c); if (curDir === 'A' && !h && v) curDir = 'D'; else if (curDir === 'D' && !v && h) curDir = 'A' }
-    function moveNext(r, c) { setDirFor(r, c); (curDir === 'A' ? cellAt(r, c + 1) : cellAt(r + 1, c))?.focus() }
-    function movePrev(r, c) { setDirFor(r, c); const p = curDir === 'A' ? cellAt(r, c - 1) : cellAt(r - 1, c); if (p) { p.focus(); p.value = '' } }
-    document.addEventListener('click', e => { const i = e.target.closest && e.target.closest('.cell input'); if (i && i.dataset.last === i.dataset.r + ',' + i.dataset.c) curDir = curDir === 'A' ? 'D' : 'A'; document.querySelectorAll('.cell input').forEach(x => delete x.dataset.last); if (i) i.dataset.last = i.dataset.r + ',' + i.dataset.c });
-    function updateTimer() { const m = Math.floor(timeLeft / 60), s = timeLeft % 60; $('timer').textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`; $('timer').classList.toggle('warning', timeLeft <= 30) }
+
+    function updateTimer() {
+      const m = Math.floor(timeLeft / 60), s = timeLeft % 60;
+      $('timer').textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+      $('timer').classList.toggle('warning', timeLeft <= 30);
+    }
+
     function finishGame(timeUp = false) {
-      if (finished) return; finished = true; clearInterval(timerId);
+      if (finished) return;
+      finished = true;
+      clearInterval(timerId);
       $('app').classList.remove('solving-crossword');
+
       let wordCorrect = 0, wordAttempted = 0, totalWords = puzzle.entries.length;
       let totalLetters = 0, lettersCorrect = 0, lettersWrong = 0, lettersUnattempted = 0;
 
@@ -2142,18 +2551,15 @@
           const userVal = (inp.value || '').trim().toUpperCase();
 
           if (!userVal) {
-            // Unattempted: show correct answer in grey
             lettersUnattempted++;
             inp.value = expected;
             inp.classList.add('unattempted');
             inp.title = 'Not attempted';
           } else if (userVal === expected) {
-            // Correct: green
             lettersCorrect++;
             inp.classList.add('correct');
             inp.title = 'Correct';
           } else {
-            // Wrong: red (keep what user typed)
             lettersWrong++;
             inp.classList.add('wrong');
             inp.title = `Wrong (Correct letter: ${expected})`;
@@ -2166,6 +2572,42 @@
       const wordPct = Math.round((wordCorrect / totalWords) * 100);
       const letterAccuracy = totalLetters ? Math.round((lettersCorrect / totalLetters) * 100) : 0;
 
+      // Leaderboard Scoring Calculation (Only for Scratch Crosswords)
+      let scratchScoreHtml = '';
+      if (puzzle.isScratch) {
+        const wordPoints = wordCorrect * 100;
+        const letterPoints = lettersCorrect * 5;
+        const mistakePenalty = (lettersWrong * 15) + (lettersUnattempted * 5);
+        const accuracyRatio = totalWords ? (wordCorrect / totalWords) : 0;
+        const speedBonus = (!timeUp && wordCorrect > 0) ? Math.round(timeLeft * 2 * accuracyRatio) : 0;
+        const perfectBonus = (wordCorrect === totalWords && lettersWrong === 0) ? 250 : 0;
+
+        const rawPoints = wordPoints + letterPoints - mistakePenalty + speedBonus + perfectBonus;
+        const finalPoints = Math.max(0, Math.round(rawPoints));
+
+        // Save to Supabase leaderboard
+        if (auth) {
+          rpc('cw_record_scratch_score', { ...A(), p_points: finalPoints })
+            .then(() => toast(`+${finalPoints} points saved to Leaderboard!`))
+            .catch(err => console.error('Leaderboard score save failed:', err));
+        }
+
+        scratchScoreHtml = `
+          <div style="margin-top:16px; background:#1b2516; border:1px solid #3c522b; border-radius:10px; padding:16px 18px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+              <div>
+                <div style="font-size:11px; font-weight:800; color:var(--lime); letter-spacing:0.8px; text-transform:uppercase;">🏆 SCRATCH CROSSWORD CHALLENGE</div>
+                <div style="font-size:24px; font-weight:850; color:#f0f1e9; margin:3px 0;">+${finalPoints} <span style="font-size:14px; color:var(--lime);">Points Earned!</span></div>
+                <div style="font-size:12px; color:var(--muted); line-height:1.5;">
+                  Words: <b>+${wordPoints}</b> · Letters: <b>+${letterPoints}</b> · Mistakes: <b style="color:#f2b2a5">-${mistakePenalty}</b> · Speed bonus: <b>+${speedBonus}</b> ${perfectBonus ? `· Perfect: <b>+${perfectBonus}</b>` : ''}
+                </div>
+              </div>
+              <button class="primary" id="btnViewLeaderboardResults" style="padding:10px 16px; font-size:12px; font-weight:800;">View Leaderboard →</button>
+            </div>
+          </div>
+        `;
+      }
+
       $('resultTitle').textContent = timeUp ? '⏰ Time is up!' : '🎉 Crossword Completed!';
       $('score').innerHTML = `${wordPct}% <span style="font-size:16px;font-weight:600;color:var(--muted)">word score</span>`;
 
@@ -2174,8 +2616,20 @@
         <span><b>${lettersCorrect} / ${totalLetters}</b> letters correct (${letterAccuracy}%)</span>
         <span><b style="color:#bfe69a">✓ ${lettersCorrect}</b> correct &nbsp; <b style="color:#f2b2a5">✗ ${lettersWrong}</b> wrong &nbsp; <b style="color:#a0a397">― ${lettersUnattempted}</b> missed</span>
         <span><b>${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}</b> time taken</span>
+        ${scratchScoreHtml}
       `;
-      // Populate the correct words breakdown box
+
+      if (puzzle.isScratch) {
+        const lbBtn = $('goToLeaderboard');
+        if (lbBtn) lbBtn.style.display = 'inline-block';
+        const resLbBtn = $('btnViewLeaderboardResults');
+        if (resLbBtn) resLbBtn.onclick = () => { backToSetup(); switchView('leaderboard'); };
+      } else {
+        const lbBtn = $('goToLeaderboard');
+        if (lbBtn) lbBtn.style.display = 'none';
+      }
+
+      // Populate correct words breakdown list
       const allEntries = [
         ...puzzle.across.map(e => ({ ...e, dirName: 'Across' })),
         ...puzzle.down.map(e => ({ ...e, dirName: 'Down' }))
@@ -2207,7 +2661,9 @@
       $('results').style.display = 'block';
       $('results').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
+
     window.addEventListener('resize', () => requestAnimationFrame(fitSolverGrid));
+
     const backToSetup = () => {
       clearInterval(timerId);
       $('app').classList.remove('solving-crossword');
@@ -2218,9 +2674,14 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
       $('crosswordView').scrollTo({ top: 0, behavior: 'smooth' });
     };
+
     $('submitPuzzle').onclick = () => finishGame(false);
     $('tryAgain').onclick = backToSetup;
     $('goToLearn').onclick = () => { backToSetup(); switchView('study'); };
+    const lbBtn = $('goToLeaderboard');
+    if (lbBtn) lbBtn.onclick = () => { backToSetup(); switchView('leaderboard'); };
+    const rlbBtn = $('refreshLeaderboardBtn');
+    if (rlbBtn) rlbBtn.onclick = () => loadLeaderboard();
 
     if (isAdminRoute) initAdmin(); else initLearner();
   </script>

@@ -28,6 +28,8 @@ create table if not exists cw_words (
 alter table cw_words add column if not exists key_definition text;
 alter table cw_words add column if not exists source text;
 alter table cw_words add column if not exists set_id text;
+alter table cw_users add column if not exists scratch_points int not null default 0;
+alter table cw_users add column if not exists scratch_count int not null default 0;
 create unique index if not exists cw_words_word_uq on cw_words (lower(word));
 
 create table if not exists cw_progress (
@@ -152,6 +154,33 @@ begin
   update cw_progress set used_count = 0 where user_id = v_id;
 end $$;
 
+-- ---------- leaderboard & scratch points ----------
+create or replace function cw_record_scratch_score(p_user text, p_pass text, p_points int) returns jsonb
+language plpgsql security definer set search_path = public, extensions as $$
+declare v_id uuid; v_total int;
+begin
+  v_id := cw_auth(p_user, p_pass);
+  update cw_users
+     set scratch_points = scratch_points + greatest(0, p_points),
+         scratch_count = scratch_count + 1,
+         last_active = now()
+   where id = v_id
+   returning scratch_points into v_total;
+  return jsonb_build_object('ok', true, 'total_points', v_total);
+end $$;
+
+create or replace function cw_leaderboard() returns jsonb
+language plpgsql security definer set search_path = public, extensions as $$
+begin
+  return (select coalesce(jsonb_agg(jsonb_build_object(
+    'username', u.username,
+    'points', coalesce(u.scratch_points, 0),
+    'games', coalesce(u.scratch_count, 0),
+    'last_active', u.last_active
+  ) order by coalesce(u.scratch_points, 0) desc, coalesce(u.scratch_count, 0) asc, u.created_at asc), '[]'::jsonb)
+  from cw_users u);
+end $$;
+
 -- ---------- admin functions ----------
 create or replace function cw_admin_check(p_admin text) returns jsonb
 language plpgsql security definer set search_path = public, extensions as $$
@@ -250,6 +279,8 @@ grant execute on function
   cw_admin_delete_word(text,bigint), cw_admin_delete_set(text,text), cw_admin_clear_words(text), cw_admin_users(text),
   cw_admin_create_user(text,text,text), cw_admin_set_password(text,uuid,text),
   cw_admin_delete_user(text,uuid)
+,
+  cw_record_scratch_score(text,text,int), cw_leaderboard()
 to anon, authenticated;
 
 notify pgrst, 'reload schema';
