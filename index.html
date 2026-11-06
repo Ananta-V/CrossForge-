@@ -4,6 +4,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>CrossForge</title>
   <style>
     :root {
@@ -2642,6 +2645,21 @@
       if (!currentDetailUserId) return;
       try {
         const d = await rpc('cw_admin_user_detail', { p_admin: adminPw, p_user_id: currentDetailUserId });
+        // Also merge any locally recorded submissions for this user (for testing resilience)
+        try {
+          const lk = 'cw_submissions_' + d.user.username;
+          const locals = JSON.parse(localStorage.getItem(lk) || '[]');
+          if (Array.isArray(locals) && locals.length) {
+            d.crosswords = d.crosswords || [];
+            const existingIds = new Set(d.crosswords.map(x => String(x.id)));
+            locals.forEach(loc => {
+              if (!existingIds.has(String(loc.id))) {
+                d.crosswords.unshift(loc);
+              }
+            });
+            d.analytics.total_crosswords = Math.max(d.analytics.total_crosswords || 0, d.crosswords.length);
+          }
+        } catch (e) {}
         currentUserDetailData = d;
         renderUserDetail(d);
       } catch (err) {
@@ -2707,7 +2725,7 @@
         `;
       }).join('')) || `<tr><td colspan="8" class="muted" style="text-align:center; padding:24px;">No submitted crosswords recorded for this user yet. (${u.cw_count || 0} completed before snapshots).</td></tr>`;
 
-      $('dashRecentCwBody').querySelectorAll('[data-inspect]').forEach(b => b.onclick = () => inspectCrossword(+b.dataset.inspect));
+      $('dashRecentCwBody').querySelectorAll('[data-inspect]').forEach(b => b.onclick = () => inspectCrossword(b.dataset.inspect));
 
       // Mastered words count & table
       const mw = d.mastered_words || [];
@@ -2797,17 +2815,29 @@
       container.querySelectorAll('[data-open-inspect]').forEach(b => {
         b.onclick = e => {
           e.stopPropagation();
-          inspectCrossword(+b.dataset.openInspect);
+          inspectCrossword(b.dataset.openInspect);
         };
       });
       container.querySelectorAll('.cw-card').forEach(card => {
-        card.onclick = () => inspectCrossword(+card.dataset.cwId);
+        card.onclick = () => inspectCrossword(card.dataset.cwId);
       });
     }
 
     async function inspectCrossword(cwId) {
       try {
-        const cw = await rpc('cw_admin_crossword_detail', { p_admin: adminPw, p_crossword_id: cwId });
+        let cw = null;
+        const isLocal = typeof cwId === 'string' && cwId.startsWith('local_');
+        if (!isLocal && !isNaN(Number(cwId))) {
+          try {
+            cw = await rpc('cw_admin_crossword_detail', { p_admin: adminPw, p_crossword_id: Number(cwId) });
+          } catch (e) {
+            console.warn('RPC cw_admin_crossword_detail failed, looking in loaded data:', e);
+          }
+        }
+        if (!cw && currentUserDetailData) {
+          cw = (currentUserDetailData.crosswords || []).find(x => String(x.id) === String(cwId));
+        }
+        if (!cw) throw Error('Crossword not found');
         switchSubtab('inspect');
         renderInspectCrossword(cw);
       } catch (err) {
@@ -2816,7 +2846,8 @@
     }
 
     function renderInspectCrossword(cw) {
-      $('inspectCwTitle').textContent = `${cw.title || 'Crossword'} · ${esc(cw.username)}`;
+      const learnerName = cw.username || (currentUserDetailData && currentUserDetailData.user && currentUserDetailData.user.username) || 'Learner';
+      $('inspectCwTitle').textContent = `${cw.title || 'Crossword'} · ${esc(learnerName)}`;
       const isScratch = cw.crossword_type === 'scratch';
       $('inspectCwTypeBadge').innerHTML = isScratch
         ? '<span style="font-size:10px; font-weight:800; color:var(--lime); background:#1f2e18; border:1px solid #3d542b; padding:2px 7px; border-radius:5px;">🏆 SCRATCH CHALLENGE</span>'
@@ -3478,16 +3509,27 @@
       clearInterval(timerId);
       $('app').classList.remove('solving-crossword');
 
+      // 1. Scrape raw user inputs BEFORE any evaluation or DOM mutation!
+      const userInputs = {};
+      for (let r = 0; r < puzzle.rows; r++) {
+        for (let c = 0; c < puzzle.cols; c++) {
+          if (puzzle.grid[r][c]) {
+            const val = (cellAt(r, c)?.value || '').trim().toUpperCase();
+            if (val) userInputs[`${r},${c}`] = val;
+          }
+        }
+      }
+
       let wordCorrect = 0, wordAttempted = 0, totalWords = puzzle.entries.length;
       let totalLetters = 0, lettersCorrect = 0, lettersWrong = 0, lettersUnattempted = 0;
 
-      // Word-level evaluation
+      // Word-level evaluation using userInputs
       for (const e of puzzle.entries) {
         let enteredWord = '';
         let hasAnyInput = false;
         for (let i = 0; i < e.answer.length; i++) {
           const r = e.r + (e.dir === 'D' ? i : 0), c = e.c + (e.dir === 'A' ? i : 0);
-          const val = (cellAt(r, c)?.value || '').toUpperCase();
+          const val = userInputs[`${r},${c}`] || '';
           enteredWord += val;
           if (val) hasAnyInput = true;
         }
@@ -3504,7 +3546,7 @@
           const inp = cellAt(r, c);
           if (!inp) continue;
           inp.disabled = true;
-          const userVal = (inp.value || '').trim().toUpperCase();
+          const userVal = userInputs[`${r},${c}`] || '';
 
           if (!userVal) {
             lettersUnattempted++;
@@ -3565,38 +3607,80 @@
         `;
       }
 
+      // Populate full entries list with clue numbers and direction names
+      const allEntries = [
+        ...puzzle.across.map(e => ({ ...e, dirName: 'Across' })),
+        ...puzzle.down.map(e => ({ ...e, dirName: 'Down' }))
+      ].sort((a, b) => a.num - b.num);
+
       // Save crossword snapshot into database for admin analytics & review
+      const currentLearnerName = auth ? auth.u : 'guest';
+      const submissionPayload = {
+        p_type: puzzle.isScratch ? 'scratch' : 'normal',
+        p_rows: puzzle.rows,
+        p_cols: puzzle.cols,
+        p_grid: puzzle.grid,
+        p_entries: allEntries,
+        p_user_inputs: userInputs,
+        p_words_correct: wordCorrect,
+        p_words_total: totalWords,
+        p_words_attempted: wordAttempted,
+        p_letters_correct: lettersCorrect,
+        p_letters_wrong: lettersWrong,
+        p_letters_unattempted: lettersUnattempted,
+        p_total_letters: totalLetters,
+        p_time_taken_seconds: el,
+        p_time_left_seconds: timeLeft,
+        p_word_score_pct: wordPct,
+        p_letter_accuracy_pct: letterAccuracy,
+        p_points: puzzle.isScratch ? finalPoints : 0
+      };
+
+      // Always save to localStorage immediately for instant local availability and resilience
+      const localCw = {
+        id: 'local_' + Date.now(),
+        user_id: currentLearnerName,
+        username: currentLearnerName,
+        crossword_type: submissionPayload.p_type,
+        title: puzzle.isScratch ? 'Scratch Crossword Challenge' : 'Practice Crossword',
+        rows: puzzle.rows,
+        cols: puzzle.cols,
+        grid: puzzle.grid,
+        entries: allEntries,
+        user_inputs: userInputs,
+        word_count: totalWords,
+        words_correct: wordCorrect,
+        words_attempted: wordAttempted,
+        letters_correct: lettersCorrect,
+        letters_wrong: lettersWrong,
+        letters_unattempted: lettersUnattempted,
+        total_letters: totalLetters,
+        time_taken_seconds: el,
+        time_left_seconds: timeLeft,
+        word_score_pct: wordPct,
+        letter_accuracy_pct: letterAccuracy,
+        points: submissionPayload.p_points,
+        submitted_at: new Date().toISOString()
+      };
+      try {
+        const uKey = 'cw_submissions_' + currentLearnerName;
+        const prev = JSON.parse(localStorage.getItem(uKey) || '[]');
+        prev.unshift(localCw);
+        localStorage.setItem(uKey, JSON.stringify(prev.slice(0, 50)));
+      } catch (e) {}
+
       if (auth) {
-        const userInputs = {};
-        for (let r = 0; r < puzzle.rows; r++) {
-          for (let c = 0; c < puzzle.cols; c++) {
-            if (puzzle.grid[r][c]) {
-              const val = (cellAt(r, c)?.value || '').toUpperCase();
-              if (val) userInputs[`${r},${c}`] = val;
-            }
-          }
-        }
         rpc('cw_save_crossword', {
           ...A(),
-          p_type: puzzle.isScratch ? 'scratch' : 'normal',
-          p_rows: puzzle.rows,
-          p_cols: puzzle.cols,
-          p_grid: puzzle.grid,
-          p_entries: puzzle.entries,
-          p_user_inputs: userInputs,
-          p_words_correct: wordCorrect,
-          p_words_total: totalWords,
-          p_words_attempted: wordAttempted,
-          p_letters_correct: lettersCorrect,
-          p_letters_wrong: lettersWrong,
-          p_letters_unattempted: lettersUnattempted,
-          p_total_letters: totalLetters,
-          p_time_taken_seconds: el,
-          p_time_left_seconds: timeLeft,
-          p_word_score_pct: wordPct,
-          p_letter_accuracy_pct: letterAccuracy,
-          p_points: puzzle.isScratch ? finalPoints : 0
-        }).catch(err => console.error('Save crossword snapshot failed:', err));
+          ...submissionPayload
+        })
+          .then(() => toast('✓ Crossword submitted and saved to history!'))
+          .catch(err => {
+            console.error('Save crossword snapshot failed:', err);
+            toast('Submitted (saved locally: ' + (err.message || 'offline') + ')');
+          });
+      } else {
+        toast('✓ Crossword completed (saved locally)');
       }
 
       $('resultTitle').textContent = timeUp ? '⏰ Time is up!' : '🎉 Crossword Completed!';
@@ -3620,17 +3704,11 @@
         if (lbBtn) lbBtn.style.display = 'none';
       }
 
-      // Populate correct words breakdown list
-      const allEntries = [
-        ...puzzle.across.map(e => ({ ...e, dirName: 'Across' })),
-        ...puzzle.down.map(e => ({ ...e, dirName: 'Down' }))
-      ].sort((a, b) => a.num - b.num);
-
       const listHtml = allEntries.map(e => {
         let entered = '';
         for (let i = 0; i < e.answer.length; i++) {
           const r = e.r + (e.dir === 'D' ? i : 0), c = e.c + (e.dir === 'A' ? i : 0);
-          entered += (cellAt(r, c)?.value || '').toUpperCase();
+          entered += (userInputs[`${r},${c}`] || '');
         }
         const isOk = entered === e.answer;
         const matchingWordObj = W.find(w => w.answer === e.answer);
